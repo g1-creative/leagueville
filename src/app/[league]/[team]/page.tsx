@@ -6,7 +6,7 @@ import { Section } from '@/components/Section'
 import { SquadTable } from '@/components/SquadTable'
 import { TeamLogo } from '@/components/TeamLogo'
 import { getTeamBio } from '@/lib/data/bio'
-import { getSeasonFixtures } from '@/lib/data/fixtures'
+import { getTeamFixtures } from '@/lib/data/teamFixtures'
 import { getRoster } from '@/lib/data/roster'
 import { getSeasonHistory, getStandings } from '@/lib/data/standings'
 import { findTeam } from '@/lib/data/teams'
@@ -25,16 +25,15 @@ export default async function TeamPage({
   if (!team) notFound()
 
   const [fixtures, roster, bio, history, standings] = await Promise.all([
-    getSeasonFixtures(league).catch(() => []),
+    getTeamFixtures(league, team.id).catch(() => []),
     getRoster(league, team.id).catch(() => []),
     getTeamBio(league, team.id),
     getSeasonHistory(league, team.id).catch(() => []),
     getStandings(league).catch(() => []),
   ])
 
-  const mine = fixtures.filter((f) => f.home.id === team.id || f.away.id === team.id)
-  const upcoming = mine.filter((f) => f.status !== 'final')
-  const results = mine.filter((f) => f.status === 'final').reverse()
+  const upcoming = fixtures.filter((f) => f.status !== 'final')
+  const results = fixtures.filter((f) => f.status === 'final').reverse()
 
   let position: string | undefined
   for (const g of standings) {
@@ -83,11 +82,11 @@ export default async function TeamPage({
       </div>
 
       <Section title="Upcoming">
-        <FixtureList fixtures={upcoming} pickable emptyMessage="No upcoming games scheduled." />
+        <FixtureList fixtures={upcoming} pickable showLeague emptyMessage="No upcoming games scheduled." />
       </Section>
 
       <Section title="Results">
-        <FixtureList fixtures={results} emptyMessage="No results yet this season." />
+        <FixtureList fixtures={results} showLeague emptyMessage="No results yet this season." />
       </Section>
 
       <Section title="Squad">
