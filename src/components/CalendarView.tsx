@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   bucketByDay,
   canShift,
@@ -17,6 +17,16 @@ import type { Fixture } from '@/lib/types'
 import { DayColumn } from './DayColumn'
 import { MonthGrid } from './MonthGrid'
 import { useTz } from './TimezoneProvider'
+
+const weekColumnFormat = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  weekday: 'short',
+  day: 'numeric',
+})
+
+function weekColumnHeading(key: string): string {
+  return weekColumnFormat.format(new Date(`${key}T12:00:00Z`))
+}
 
 const VIEWS: { key: ViewName; label: string }[] = [
   { key: 'month', label: 'Month' },
@@ -63,6 +73,8 @@ export function CalendarView({
   const { tz } = useTz()
   const [pinned, setPinned] = useState<PinnedTeam | null>(null)
   const [openDay, setOpenDay] = useState<string | null>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => setPinned(readPinned()), [])
 
@@ -74,6 +86,20 @@ export function CalendarView({
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [openDay])
+
+  useEffect(() => {
+    if (openDay) {
+      panelRef.current?.focus()
+    } else {
+      openerRef.current?.focus()
+      openerRef.current = null
+    }
+  }, [openDay])
+
+  const openDayPanel = (dayKey: string) => {
+    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    setOpenDay(dayKey)
+  }
 
   // `myteam` wins over the league chips. With nothing pinned it is ignored.
   const teamFilter = myteam ? pinned : null
@@ -100,7 +126,7 @@ export function CalendarView({
       ? leagues.filter((s) => s !== slug)
       : LEAGUES.filter((l) => leagues.includes(l.slug) || l.slug === slug).map((l) => l.slug)
 
-  const bounds = seasonDayBounds()
+  const bounds = seasonDayBounds(new Date(`${today}T00:00:00Z`))
   const byDay = bucketByDay(visible, tz)
   const prev = shiftAnchor(anchor, view, -1)
   const next = shiftAnchor(anchor, view, 1)
@@ -150,15 +176,34 @@ export function CalendarView({
       <div className="flex flex-wrap items-center gap-1.5">
         {LEAGUES.map((l) => {
           const on = leagues.includes(l.slug)
+          const isOnlySelected = on && leagues.length === 1
+          const chipClassName = `num rounded-[2px] border px-2 py-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${
+            teamFilter ? 'pointer-events-none opacity-30' : ''
+          } ${on ? '' : 'border-rule text-dim hover:text-chalk'}`
+          const chipStyle =
+            on && !teamFilter ? { borderColor: l.accent, backgroundColor: `${l.accent}26`, color: l.accent } : undefined
+
+          if (teamFilter || isOnlySelected) {
+            return (
+              <span
+                key={l.slug}
+                aria-pressed={on && !teamFilter}
+                aria-disabled
+                className={chipClassName}
+                style={chipStyle}
+              >
+                {l.shortName}
+              </span>
+            )
+          }
+
           return (
             <Link
               key={l.slug}
               href={href({ leagues: toggleLeague(l.slug), myteam: false })}
-              aria-pressed={on && !teamFilter}
-              className={`num rounded-[2px] border px-2 py-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${
-                teamFilter ? 'pointer-events-none opacity-30' : ''
-              } ${on ? '' : 'border-rule text-dim hover:text-chalk'}`}
-              style={on && !teamFilter ? { borderColor: l.accent, backgroundColor: `${l.accent}26`, color: l.accent } : undefined}
+              aria-pressed={on}
+              className={chipClassName}
+              style={chipStyle}
             >
               {l.shortName}
             </Link>
@@ -178,7 +223,7 @@ export function CalendarView({
       </div>
 
       {view === 'month' && (
-        <MonthGrid anchor={anchor} fixtures={visible} today={today} onSelectDay={setOpenDay} />
+        <MonthGrid anchor={anchor} fixtures={visible} today={today} onSelectDay={openDayPanel} />
       )}
 
       {view === 'week' && (
@@ -189,7 +234,7 @@ export function CalendarView({
                 key={key}
                 dayKey={key}
                 fixtures={byDay.get(key) ?? []}
-                heading={dateHeading(`${key}T12:00:00Z`, 'UTC').replace(/,.*/, '')}
+                heading={weekColumnHeading(key)}
               />
             ))}
           </div>
@@ -216,9 +261,11 @@ export function CalendarView({
 
       {openDay && (
         <div
+          ref={panelRef}
           role="dialog"
+          tabIndex={-1}
           aria-label={dateHeading(`${openDay}T12:00:00Z`, 'UTC')}
-          className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96 sm:rounded-[3px] sm:border"
+          className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur outline-none sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96 sm:rounded-[3px] sm:border"
         >
           <div className="mb-3 flex items-center justify-between">
             <h2 className="display text-[13px] leading-none">{dateHeading(`${openDay}T12:00:00Z`, 'UTC')}</h2>

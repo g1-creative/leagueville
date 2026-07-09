@@ -74,4 +74,70 @@ describe('CalendarView', () => {
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('dialog')).toBeNull()
   })
+
+  it('moves focus into the day panel on open and restores it on Escape', () => {
+    render(<CalendarView {...props} view="month" anchor="2026-07-15" leagues={ALL} />)
+    const opener = screen.getByRole('button', { name: /^July 15, 2026\b/ })
+    opener.focus()
+    fireEvent.click(opener)
+    expect(document.activeElement).toBe(screen.getByRole('dialog'))
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(document.activeElement).toBe(opener)
+  })
+
+  it('does not let the last selected league chip be deactivated', () => {
+    render(<CalendarView {...props} leagues={['mls']} />)
+    const chip = screen.getByText('MLS')
+    expect(chip.tagName).not.toBe('A')
+    expect(screen.queryAllByRole('link', { name: 'MLS' })).toHaveLength(0)
+    expect(chip.getAttribute('aria-disabled')).not.toBeNull()
+    expect(chip.getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('lets any league chip toggle off when more than one is selected', () => {
+    render(<CalendarView {...props} leagues={['mls', 'premier-league']} />)
+    expect(screen.getByRole('link', { name: 'MLS' })).toBeDefined()
+    expect(screen.getByRole('link', { name: 'EPL' })).toBeDefined()
+  })
+
+  it('makes league chips non-interactive (not links) when myteam is on with a pinned team', () => {
+    window.localStorage.setItem(
+      'lv-myteam',
+      JSON.stringify({ league: 'premier-league', slug: 'liverpool', name: 'Liverpool' }),
+    )
+    render(<CalendarView {...props} leagues={ALL} myteam />)
+    expect(screen.queryAllByRole('link', { name: /^(EPL|MLS|La Liga|Ligue 1|Brasileirão)$/ })).toHaveLength(0)
+    const mlsChip = screen.getByText('MLS')
+    expect(mlsChip.getAttribute('aria-disabled')).not.toBeNull()
+    expect(mlsChip.getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('keeps league chips as links (interactive) when myteam is off', () => {
+    window.localStorage.setItem(
+      'lv-myteam',
+      JSON.stringify({ league: 'premier-league', slug: 'liverpool', name: 'Liverpool' }),
+    )
+    render(<CalendarView {...props} leagues={ALL} />)
+    expect(screen.getByRole('link', { name: 'MLS' })).toBeDefined()
+  })
+
+  it('reflects the pinned "myteam" chip pressed state', () => {
+    window.localStorage.setItem(
+      'lv-myteam',
+      JSON.stringify({ league: 'premier-league', slug: 'liverpool', name: 'Liverpool' }),
+    )
+    render(<CalendarView {...props} leagues={ALL} myteam />)
+    const myteamChip = screen.getByRole('link', { name: /★ Liverpool/ })
+    expect(myteamChip.getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('shows the weekday and day number in week-view column headings', () => {
+    render(<CalendarView {...props} view="week" anchor="2026-07-15" leagues={ALL} />)
+    const expected = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'UTC',
+      weekday: 'short',
+      day: 'numeric',
+    }).format(new Date('2026-07-12T12:00:00Z'))
+    expect(screen.getAllByText(expected).length).toBeGreaterThan(0)
+  })
 })
