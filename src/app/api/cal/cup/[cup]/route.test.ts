@@ -11,6 +11,7 @@ vi.mock('@/lib/data/fixtures', () => ({
 }))
 
 import { GET } from './route'
+import { getSeasonFixtures } from '@/lib/data/fixtures'
 
 describe('cup calendar route', () => {
   it('serves an ics for a known cup, stripping the .ics suffix', async () => {
@@ -37,5 +38,17 @@ describe('cup calendar route', () => {
       params: Promise.resolve({ cup: 'copa-do-brasil' }),
     })
     expect(res.status).toBe(404)
+  })
+
+  it('serves an empty-but-valid ics for a known cup with no fixtures yet', async () => {
+    vi.mocked(getSeasonFixtures).mockResolvedValueOnce([])
+    const res = await GET(new Request('http://localhost/api/cal/cup/fa-cup.ics'), {
+      params: Promise.resolve({ cup: 'fa-cup.ics' }),
+    })
+    expect(res.status).toBe(200)
+    const body = await res.text()
+    expect(body.startsWith('BEGIN:VCALENDAR')).toBe(true)
+    expect(body.trimEnd().endsWith('END:VCALENDAR')).toBe(true)
+    expect(body.match(/BEGIN:VEVENT/g)).toBeNull()
   })
 })
