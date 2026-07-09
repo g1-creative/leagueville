@@ -1,0 +1,93 @@
+import { espnJson } from './espn'
+import { seasonRange, type League, type LeagueSlug } from '../leagues'
+import type { Fixture, FixtureSide } from '../types'
+
+interface RawCompetitor {
+  homeAway: 'home' | 'away'
+  winner?: boolean
+  score?: string | { displayValue?: string }
+  team: {
+    id: string
+    displayName: string
+    abbreviation?: string
+    logo?: string
+    logos?: { href: string }[]
+  }
+}
+
+export interface RawEvent {
+  id: string
+  date: string
+  competitions: {
+    venue?: { fullName?: string }
+    status: {
+      type: { state: 'pre' | 'in' | 'post'; completed: boolean; description: string; detail: string; shortDetail: string }
+    }
+    competitors: RawCompetitor[]
+  }[]
+}
+
+function side(c: RawCompetitor): FixtureSide {
+  const rawScore = typeof c.score === 'object' ? c.score?.displayValue : c.score
+  const parsed = rawScore === undefined || rawScore === '' ? undefined : Number(rawScore)
+  return {
+    id: c.team.id,
+    name: c.team.displayName,
+    abbrev: c.team.abbreviation,
+    logo: c.team.logo ?? c.team.logos?.[0]?.href,
+    score: parsed !== undefined && Number.isNaN(parsed) ? undefined : parsed,
+    winner: c.winner,
+  }
+}
+
+export function normalizeEvent(raw: RawEvent, league: LeagueSlug): Fixture | null {
+  const comp = raw.competitions?.[0]
+  if (!comp) return null
+  const home = comp.competitors?.find((c) => c.homeAway === 'home')
+  const away = comp.competitors?.find((c) => c.homeAway === 'away')
+  if (!home || !away) return null
+  const st = comp.status.type
+  const status: Fixture['status'] =
+    st.description === 'Postponed' ? 'postponed'
+    : st.state === 'pre' ? 'scheduled'
+    : st.state === 'in' ? 'live'
+    : 'final'
+  return {
+    id: raw.id,
+    league,
+    kickoff: new Date(raw.date).toISOString(),
+    status,
+    statusDetail: st.shortDetail ?? st.detail ?? st.description,
+    venue: comp.venue?.fullName,
+    home: side(home),
+    away: side(away),
+  }
+}
+
+function normalizeAll(events: RawEvent[] | undefined, league: League): Fixture[] {
+  return (events ?? [])
+    .map((e) => normalizeEvent(e, league.slug))
+    .filter((f): f is Fixture => f !== null)
+    .sort((a, b) => a.kickoff.localeCompare(b.kickoff))
+}
+
+export async function getSeasonFixtures(league: League): Promise<Fixture[]> {
+  const { start, end } = seasonRange(league, new Date())
+  const data = await espnJson<{ events?: RawEvent[] }>(
+    `/site/v2/sports/soccer/${league.espn}/scoreboard?dates=${start}-${end}&limit=1000`,
+    21600,
+  )
+  return normalizeAll(data.events, league)
+}
+
+export async function getScoreboardWindow(league: League): Promise<Fixture[]> {
+  const day = (d: Date) => d.toISOString().slice(0, 10).replace(/-/g, '')
+  const now = Date.now()
+  const from = day(new Date(now - 24 * 3600_000))
+  const to = day(new Date(now + 24 * 3600_000))
+  const data = await espnJson<{ events?: RawEvent[] }>(
+    `/site/v2/sports/soccer/${league.espn}/scoreboard?dates=${from}-${to}&limit=200`,
+    60,
+  )
+  return normalizeAll(data.events, league)
+}
