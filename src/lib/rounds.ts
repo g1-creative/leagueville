@@ -41,5 +41,11 @@ export function groupByRound(fixtures: Fixture[]): RoundGroup[] {
   }
   return [...buckets.entries()]
     .map(([round, grouped]) => ({ round, fixtures: grouped }))
-    .sort((a, b) => earliestKickoff(a.fixtures).localeCompare(earliestKickoff(b.fixtures)))
+    .sort((a, b) => {
+      const aEarliest = earliestKickoff(a.fixtures)
+      const bEarliest = earliestKickoff(b.fixtures)
+      if (aEarliest < bEarliest) return -1
+      if (aEarliest > bEarliest) return 1
+      return 0
+    })
 }

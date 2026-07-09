@@ -57,4 +57,37 @@ describe('groupByRound', () => {
     expect(grouped[0].round).toBe('')
     expect(grouped[0].fixtures).toHaveLength(2)
   })
+
+  it('orders by true per-group minimum kickoff, not fixtures[0].kickoff', () => {
+    // 'quarterfinals' fixtures are listed latest-first, so fixtures[0].kickoff
+    // (2027-05-01) is its LATEST kickoff, not its earliest (2027-01-01).
+    // 'semifinals' has a single fixture that falls between those two dates.
+    // A fixtures[0]-based implementation would therefore rank 'semifinals'
+    // (2027-03-01) before 'quarterfinals' (fixtures[0] = 2027-05-01), which
+    // is wrong: quarterfinals' true earliest kickoff (2027-01-01) precedes
+    // semifinals'.
+    const grouped = groupByRound([
+      fixture('qf-late', '2027-05-01T19:00:00.000Z', 'quarterfinals'),
+      fixture('qf-early', '2027-01-01T19:00:00.000Z', 'quarterfinals'),
+      fixture('sf', '2027-03-01T19:00:00.000Z', 'semifinals'),
+    ])
+    expect(grouped.map((g) => g.round)).toEqual(['quarterfinals', 'semifinals'])
+  })
+
+  it('orders overlapping rounds by minimum kickoff, not maximum or last-seen', () => {
+    // Round A's earliest kickoff (Jan) precedes round B's earliest (Feb),
+    // but A also has a fixture kicking off in April, after B's earliest.
+    // Ordering by per-group minimum puts A before B; ordering by per-group
+    // maximum or by "last fixture seen per group" would put B before A.
+    const grouped = groupByRound([
+      fixture('a-early', '2027-01-01T19:00:00.000Z', 'round-a'),
+      fixture('b-only', '2027-02-01T19:00:00.000Z', 'round-b'),
+      fixture('a-late', '2027-04-01T19:00:00.000Z', 'round-a'),
+    ])
+    expect(grouped.map((g) => g.round)).toEqual(['round-a', 'round-b'])
+  })
+
+  it('returns an empty array for empty input', () => {
+    expect(groupByRound([])).toEqual([])
+  })
 })
