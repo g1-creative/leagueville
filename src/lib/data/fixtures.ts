@@ -19,6 +19,7 @@ interface RawCompetitor {
 export interface RawEvent {
   id: string
   date: string
+  season?: { slug?: string }
   competitions: {
     venue?: { fullName?: string }
     status: {
@@ -59,6 +60,7 @@ export function normalizeEvent(raw: RawEvent, competition: CompetitionSlug): Fix
     kickoff: new Date(raw.date).toISOString(),
     status,
     statusDetail: st.shortDetail ?? st.detail ?? st.description,
+    round: raw.season?.slug,
     venue: comp.venue?.fullName,
     home: side(home),
     away: side(away),

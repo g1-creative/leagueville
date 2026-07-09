@@ -15,6 +15,7 @@ export interface Fixture {
   kickoff: string // ISO 8601 UTC
   status: 'scheduled' | 'live' | 'final' | 'postponed'
   statusDetail: string
+  round?: string // cup round from ESPN's event.season.slug, e.g. 'round-of-16'; leagues leave it undefined
   venue?: string
   home: FixtureSide
   away: FixtureSide

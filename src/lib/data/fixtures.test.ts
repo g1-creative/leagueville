@@ -48,6 +48,19 @@ const postponedEvent: RawEvent = {
   }],
 }
 
+const cupEvent: RawEvent = {
+  id: '740123',
+  date: '2027-02-17T20:00Z',
+  season: { slug: 'round-of-16' },
+  competitions: [{
+    status: { type: { state: 'pre', completed: false, description: 'Scheduled', detail: 'Wed, February 17th at 8:00 PM UTC', shortDetail: '2/17 - 8:00 PM UTC' } },
+    competitors: [
+      { homeAway: 'home', team: { id: '359', displayName: 'Arsenal' } },
+      { homeAway: 'away', team: { id: '132', displayName: 'Bayern Munich' } },
+    ],
+  }],
+}
+
 describe('normalizeEvent', () => {
   it('normalizes a finished game', () => {
     const f = normalizeEvent(finalEvent, 'premier-league')!
@@ -81,5 +94,13 @@ describe('normalizeEvent', () => {
 
   it('returns null for malformed events', () => {
     expect(normalizeEvent({ id: 'x', date: '2026-01-01T00:00Z', competitions: [] }, 'mls')).toBeNull()
+  })
+
+  it('populates round from season.slug on cup events', () => {
+    expect(normalizeEvent(cupEvent, 'champions-league')!.round).toBe('round-of-16')
+  })
+
+  it('leaves round undefined when the event has no season slug', () => {
+    expect(normalizeEvent(scheduledEvent, 'premier-league')!.round).toBeUndefined()
   })
 })
