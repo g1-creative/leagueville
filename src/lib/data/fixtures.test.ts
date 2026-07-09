@@ -52,7 +52,7 @@ describe('normalizeEvent', () => {
   it('normalizes a finished game', () => {
     const f = normalizeEvent(finalEvent, 'premier-league')!
     expect(f.id).toBe('2267073')
-    expect(f.league).toBe('premier-league')
+    expect(f.competition).toBe('premier-league')
     expect(f.kickoff).toBe('2025-08-15T19:00:00.000Z')
     expect(f.status).toBe('final')
     expect(f.statusDetail).toBe('FT')

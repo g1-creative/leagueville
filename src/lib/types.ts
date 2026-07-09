@@ -11,7 +11,7 @@ export interface FixtureSide {
 
 export interface Fixture {
   id: string
-  league: CompetitionSlug
+  competition: CompetitionSlug
   kickoff: string // ISO 8601 UTC
   status: 'scheduled' | 'live' | 'final' | 'postponed'
   statusDetail: string

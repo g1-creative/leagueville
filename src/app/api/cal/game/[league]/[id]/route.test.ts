@@ -3,17 +3,17 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('@/lib/data/fixtures', () => ({
   getSeasonFixtures: vi.fn(async () => [
     {
-      id: '1', league: 'premier-league', kickoff: '2026-08-22T14:00:00.000Z',
+      id: '1', competition: 'premier-league', kickoff: '2026-08-22T14:00:00.000Z',
       status: 'scheduled', statusDetail: '', venue: 'Anfield',
       home: { id: 'h', name: 'Liverpool' }, away: { id: 'a', name: 'Everton' },
     },
     {
-      id: '2', league: 'premier-league', kickoff: '2026-08-23T14:00:00.000Z',
+      id: '2', competition: 'premier-league', kickoff: '2026-08-23T14:00:00.000Z',
       status: 'final', statusDetail: 'FT',
       home: { id: 'h', name: 'Arsenal', score: 2 }, away: { id: 'a', name: 'Chelsea', score: 1 },
     },
     {
-      id: '3', league: 'premier-league', kickoff: '2026-08-24T14:00:00.000Z',
+      id: '3', competition: 'premier-league', kickoff: '2026-08-24T14:00:00.000Z',
       status: 'postponed', statusDetail: '', venue: 'Stamford Bridge',
       home: { id: 'h', name: 'Manchester City' }, away: { id: 'a', name: 'Liverpool' },
     },

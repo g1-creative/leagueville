@@ -34,7 +34,7 @@ export function FixtureList({
           <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">{g.heading}</h3>
           <div className="space-y-2">
             {g.items.map((f) => (
-              <FixtureCard key={`${f.league}:${f.id}`} fixture={f} pickable={pickable} showLeague={showLeague} />
+              <FixtureCard key={`${f.competition}:${f.id}`} fixture={f} pickable={pickable} showLeague={showLeague} />
             ))}
           </div>
         </section>

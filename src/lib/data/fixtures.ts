@@ -41,7 +41,7 @@ function side(c: RawCompetitor): FixtureSide {
   }
 }
 
-export function normalizeEvent(raw: RawEvent, league: CompetitionSlug): Fixture | null {
+export function normalizeEvent(raw: RawEvent, competition: CompetitionSlug): Fixture | null {
   const comp = raw.competitions?.[0]
   if (!comp) return null
   const home = comp.competitors?.find((c) => c.homeAway === 'home')
@@ -55,7 +55,7 @@ export function normalizeEvent(raw: RawEvent, league: CompetitionSlug): Fixture 
     : 'final'
   return {
     id: raw.id,
-    league,
+    competition,
     kickoff: new Date(raw.date).toISOString(),
     status,
     statusDetail: st.shortDetail ?? st.detail ?? st.description,

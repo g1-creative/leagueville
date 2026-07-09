@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { getLeague } from '@/lib/leagues'
+import { getCompetition } from '@/lib/leagues'
 import { formatKickoff } from '@/lib/time'
 import type { Fixture } from '@/lib/types'
 import { AddToCalendarMenu } from './AddToCalendarMenu'
@@ -10,19 +10,19 @@ import { useTz } from './TimezoneProvider'
 
 export function GameRow({ fixture }: { fixture: Fixture }) {
   const { tz } = useTz()
-  const league = getLeague(fixture.league)
+  const competition = getCompetition(fixture.competition)
   const showScore = fixture.status === 'live' || fixture.status === 'final'
 
   const live = fixture.status === 'live'
 
   return (
     <div className="board-row flex items-center gap-2 px-2.5 py-2.5">
-      <Link href={`/${fixture.league}/game/${fixture.id}`} className="flex min-w-0 flex-1 items-center gap-2.5">
-        {league && (
+      <Link href={`/${fixture.competition}/game/${fixture.id}`} className="flex min-w-0 flex-1 items-center gap-2.5">
+        {competition && (
           <span
             aria-hidden
             className="size-1.5 shrink-0 rounded-full"
-            style={{ backgroundColor: league.accent }}
+            style={{ backgroundColor: competition.accent }}
           />
         )}
         <span className="num w-14 shrink-0 text-[11px] leading-none text-dim">

@@ -43,7 +43,7 @@ describe('buildIcs', () => {
 
 describe('fixturesToCalEvents', () => {
   const base: Fixture = {
-    id: '1', league: 'premier-league', kickoff: '2026-08-22T14:00:00.000Z',
+    id: '1', competition: 'premier-league', kickoff: '2026-08-22T14:00:00.000Z',
     status: 'scheduled', statusDetail: '', venue: 'Anfield',
     home: { id: 'h', name: 'Liverpool' }, away: { id: 'a', name: 'Everton' },
   }

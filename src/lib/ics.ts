@@ -74,7 +74,7 @@ export function fixturesToCalEvents(fixtures: Fixture[], leagueName: string): Ca
   return fixtures
     .filter((f) => f.status !== 'postponed')
     .map((f) => ({
-      uid: `${f.league}-${f.id}@leagueville`,
+      uid: `${f.competition}-${f.id}@leagueville`,
       start: new Date(f.kickoff),
       title: `⚽ ${f.home.name} vs ${f.away.name}`,
       location: f.venue,
