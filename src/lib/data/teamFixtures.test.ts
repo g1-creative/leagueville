@@ -61,4 +61,21 @@ describe('mergeTeamFixtures', () => {
     const dup = fixture('X', 'fa-cup', '2027-01-09T15:00:00.000Z')
     expect(mergeTeamFixtures([[dup], [dup]], '359')).toHaveLength(1)
   })
+
+  it('gives a mid-table club zero Champions League games when it never qualified', () => {
+    const league = [
+      fixture('L1', 'premier-league', '2026-08-22T14:00:00.000Z', '99', '360'),
+      fixture('L2', 'premier-league', '2026-08-29T14:00:00.000Z', '361', '99'),
+    ]
+    // Champions League fixture set with no involvement from team '99' — the
+    // club never qualified, so this is a candidate competition, not an
+    // actual one.
+    const ucl = [
+      fixture('C1', 'champions-league', '2026-09-16T19:00:00.000Z', '360', '361'),
+      fixture('C2', 'champions-league', '2026-09-17T19:00:00.000Z', '362', '363'),
+    ]
+    const merged = mergeTeamFixtures([league, ucl], '99')
+    expect(merged.map((f) => f.id)).toEqual(['L1', 'L2'])
+    expect(merged.every((f) => f.competition !== 'champions-league')).toBe(true)
+  })
 })
