@@ -1,4 +1,4 @@
-import type { LeagueSlug } from './leagues'
+import type { CompetitionSlug } from './leagues'
 
 export interface FixtureSide {
   id: string
@@ -11,7 +11,7 @@ export interface FixtureSide {
 
 export interface Fixture {
   id: string
-  league: LeagueSlug
+  league: CompetitionSlug
   kickoff: string // ISO 8601 UTC
   status: 'scheduled' | 'live' | 'final' | 'postponed'
   statusDetail: string

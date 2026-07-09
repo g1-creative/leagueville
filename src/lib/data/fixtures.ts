@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache'
 import { espnJson } from './espn'
-import { seasonRange, type League, type LeagueSlug } from '../leagues'
+import { seasonRange, type League, type CompetitionSlug } from '../leagues'
 import type { Fixture, FixtureSide } from '../types'
 
 interface RawCompetitor {
@@ -41,7 +41,7 @@ function side(c: RawCompetitor): FixtureSide {
   }
 }
 
-export function normalizeEvent(raw: RawEvent, league: LeagueSlug): Fixture | null {
+export function normalizeEvent(raw: RawEvent, league: CompetitionSlug): Fixture | null {
   const comp = raw.competitions?.[0]
   if (!comp) return null
   const home = comp.competitors?.find((c) => c.homeAway === 'home')
