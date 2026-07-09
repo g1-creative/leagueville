@@ -19,6 +19,7 @@
 - Server components fetch with `getSeasonFixtures(league).catch(() => [])`, matching `src/app/page.tsx`.
 - Postponed fixtures never get a `+` button. `fixturesToCalEvents` already drops them.
 - Finished fixtures **do** get a `+`.
+- **Design system.** The app uses a custom Tailwind v4 theme defined in `src/app/globals.css`, not the stock palette. Colors: `pitch` (page), `board` (surface), `board-hi` (hover), `rule` (borders), `chalk` (foreground / the action color), `dim` (secondary text). There is no house accent — hue is reserved for league identity (`league.accent`). Component classes: `.board` (bordered surface), `.board-row` (row inside a board, with hover), `.display` (wide uppercase Archivo, headings only), `.num` (tabular Martian Mono — times, scores, dates, never prose), `.eyebrow` (9px uppercase dim label), `.btn`, `.btn-primary`, `.btn-muted`, `.score-live`, `.dot-live`. Never write `slate-*`, `emerald-*`, `amber-*`, or any stock Tailwind color. Study `src/components/FixtureCard.tsx` and `src/components/FixtureList.tsx` before writing markup.
 - Tests: `npm test` runs `vitest run --passWithNoTests`. Test files sit next to their subject (`foo.ts` → `foo.test.ts`).
 - Tests that render a component using `next/image` must mock it, exactly as `src/components/FixtureCard.test.tsx` does.
 - Commit after every task.
@@ -789,23 +790,25 @@ export function AddToCalendarMenu({ fixture }: { fixture: Fixture }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={`Add ${label} to calendar`}
-        className="rounded-md border border-slate-700 px-2 py-1 text-xs text-slate-400 hover:border-slate-500 hover:text-slate-200"
+        className={`num rounded-[2px] border px-2 py-1 text-[11px] font-bold leading-none transition-colors ${
+          open ? 'border-chalk bg-chalk text-pitch' : 'border-rule text-dim hover:border-chalk/45 hover:text-chalk'
+        }`}
       >
         +
       </button>
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-1 w-52 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 shadow-xl"
+          className="board absolute right-0 z-50 mt-1 w-52 bg-board shadow-xl"
         >
           <a
             role="menuitem"
             href={`/api/cal/game/${fixture.league}/${fixture.id}.ics`}
             download
             onClick={() => setOpen(false)}
-            className="block px-3 py-2 text-xs hover:bg-slate-800"
+            className="board-row block px-3 py-2.5 text-[11px] font-medium"
           >
-            📅 Apple / Outlook (.ics)
+            Apple / Outlook (.ics)
           </a>
           <a
             role="menuitem"
@@ -813,7 +816,7 @@ export function AddToCalendarMenu({ fixture }: { fixture: Fixture }) {
             target="_blank"
             rel="noreferrer"
             onClick={() => setOpen(false)}
-            className="block px-3 py-2 text-xs hover:bg-slate-800"
+            className="board-row block px-3 py-2.5 text-[11px] font-medium"
           >
             Google Calendar
           </a>
@@ -849,7 +852,7 @@ git commit -m "feat: add-to-calendar popover for a single game"
 - Consumes: `AddToCalendarMenu`, `TeamLogo`, `useTz`, `formatKickoff`, `getLeague`, `Fixture`.
 - Produces:
   - `<GameRow fixture={f} />` — a linked row ending in the `+`.
-  - `<DayColumn dayKey="2026-08-22" fixtures={[...]} heading?: boolean />` — a chronological stack, `—` when empty.
+  - `<DayColumn dayKey="2026-08-22" fixtures={[...]} heading?: string />` — a chronological stack, `—` when empty.
 
 `GameRow` links to `/[league]/game/[id]`, built in Task 7. The link is an `<a>` wrapping everything except the `+`, so the `+` can be clicked without navigating.
 
@@ -944,28 +947,32 @@ export function GameRow({ fixture }: { fixture: Fixture }) {
   const league = getLeague(fixture.league)
   const showScore = fixture.status === 'live' || fixture.status === 'final'
 
+  const live = fixture.status === 'live'
+
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-2 py-2">
-      <Link href={`/${fixture.league}/game/${fixture.id}`} className="flex min-w-0 flex-1 items-center gap-2">
+    <div className="board-row flex items-center gap-2 px-2.5 py-2.5">
+      <Link href={`/${fixture.league}/game/${fixture.id}`} className="flex min-w-0 flex-1 items-center gap-2.5">
         {league && (
           <span
             aria-hidden
-            className="size-2 shrink-0 rounded-full"
+            className="size-1.5 shrink-0 rounded-full"
             style={{ backgroundColor: league.accent }}
           />
         )}
-        <span className="w-16 shrink-0 text-xs text-slate-400">
+        <span className="num w-14 shrink-0 text-[11px] leading-none text-dim">
           {fixture.status === 'postponed' ? (
-            <span className="font-semibold uppercase text-amber-400">PPD</span>
+            <span className="line-through decoration-1">PPD</span>
           ) : showScore ? (
-            <span className={`font-bold ${fixture.status === 'live' ? 'text-emerald-400' : 'text-slate-200'}`}>
-              {fixture.home.score ?? '-'}–{fixture.away.score ?? '-'}
+            <span className="font-bold text-chalk">
+              <span className={live ? 'score-live' : undefined}>
+                {fixture.home.score ?? '-'}–{fixture.away.score ?? '-'}
+              </span>
             </span>
           ) : (
             formatKickoff(fixture.kickoff, tz)
           )}
         </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
           <span className="flex items-center gap-1.5">
             <TeamLogo src={fixture.home.logo} alt={fixture.home.name} size={16} />
             <span className="truncate text-xs font-medium">{fixture.home.name}</span>
@@ -1001,13 +1008,15 @@ export function DayColumn({
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-2" data-day={dayKey}>
-      {heading && (
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">{heading}</h3>
-      )}
+      {heading && <h3 className="eyebrow">{heading}</h3>}
       {fixtures.length === 0 ? (
-        <p className="py-6 text-center text-sm text-slate-700">—</p>
+        <p className="py-6 text-center text-sm text-rule">—</p>
       ) : (
-        fixtures.map((f) => <GameRow key={`${f.league}:${f.id}`} fixture={f} />)
+        <div className="board">
+          {fixtures.map((f) => (
+            <GameRow key={`${f.league}:${f.id}`} fixture={f} />
+          ))}
+        </div>
       )}
     </div>
   )
@@ -1159,16 +1168,16 @@ export function MonthGrid({
   const month = monthOf(anchor)
 
   return (
-    <div>
-      <div className="grid grid-cols-7 border-b border-slate-800 pb-1">
+    <div className="board">
+      <div className="grid grid-cols-7 border-b border-rule">
         {WEEKDAYS.map((d) => (
-          <div key={d} className="text-center text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+          <div key={d} className="eyebrow py-2 text-center">
             <span className="hidden sm:inline">{d}</span>
             <span className="sm:hidden">{d[0]}</span>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-px bg-slate-800">
+      <div className="grid grid-cols-7 gap-px bg-rule">
         {keys.map((key) => {
           const games = byDay.get(key) ?? []
           const outside = monthOf(key) !== month
@@ -1183,17 +1192,23 @@ export function MonthGrid({
               aria-label={`${Number(key.slice(8))} ${
                 games.length === 1 ? '1 game' : `${games.length} games`
               }`}
-              className={`min-h-16 bg-slate-950 p-1 text-left align-top hover:bg-slate-900 sm:min-h-28 ${
-                outside ? 'opacity-40' : ''
-              } ${isToday ? 'ring-1 ring-inset ring-emerald-500' : ''}`}
+              className={`min-h-16 bg-board p-1.5 text-left align-top transition-colors hover:bg-board-hi sm:min-h-28 ${
+                outside ? 'opacity-35' : ''
+              }`}
             >
-              <div className={`text-[11px] font-semibold ${isToday ? 'text-emerald-400' : 'text-slate-400'}`}>
+              <div
+                className={`num text-[11px] leading-none ${
+                  isToday
+                    ? 'inline-block rounded-[2px] bg-chalk px-1.5 py-1 font-bold text-pitch'
+                    : 'px-0.5 py-1 font-medium text-dim'
+                }`}
+              >
                 {Number(key.slice(8))}
               </div>
 
               {/* Mobile: dots + count */}
               {games.length > 0 && (
-                <div data-testid="day-dots" className="mt-1 flex flex-wrap items-center gap-0.5 sm:hidden">
+                <div data-testid="day-dots" className="mt-1.5 flex flex-wrap items-center gap-0.5 sm:hidden">
                   {leagues.map((slug) => (
                     <span
                       key={slug}
@@ -1202,12 +1217,12 @@ export function MonthGrid({
                       style={{ backgroundColor: getLeague(slug)?.accent }}
                     />
                   ))}
-                  <span className="ml-0.5 text-[10px] text-slate-500">{games.length}</span>
+                  <span className="num ml-0.5 text-[10px] text-dim">{games.length}</span>
                 </div>
               )}
 
               {/* Desktop: up to three chips */}
-              <div className="mt-1 hidden flex-col gap-0.5 sm:flex">
+              <div className="mt-1 hidden flex-col gap-1 sm:flex">
                 {games.slice(0, MAX_CHIPS).map((g) => (
                   <span key={`${g.league}:${g.id}`} className="flex items-center gap-1 truncate text-[10px]">
                     <span
@@ -1215,10 +1230,10 @@ export function MonthGrid({
                       className="size-1.5 shrink-0 rounded-full"
                       style={{ backgroundColor: getLeague(g.league)?.accent }}
                     />
-                    <span className="truncate text-slate-300">{abbrev(g.home.name)}</span>
-                    <span className="text-slate-600">–</span>
-                    <span className="truncate text-slate-300">{abbrev(g.away.name)}</span>
-                    <span className="ml-auto shrink-0 text-slate-500">
+                    <span className="num truncate font-medium text-chalk">{abbrev(g.home.name)}</span>
+                    <span className="text-dim">–</span>
+                    <span className="num truncate font-medium text-chalk">{abbrev(g.away.name)}</span>
+                    <span className="num ml-auto shrink-0 text-dim">
                       {g.status === 'postponed' ? 'PPD' : formatKickoff(g.kickoff, tz)}
                     </span>
                     <span className="sr-only">{g.home.name}</span>
@@ -1226,7 +1241,7 @@ export function MonthGrid({
                   </span>
                 ))}
                 {games.length > MAX_CHIPS && (
-                  <span className="text-[10px] text-slate-500">{`+${games.length - MAX_CHIPS} more`}</span>
+                  <span className="eyebrow">{`+${games.length - MAX_CHIPS} more`}</span>
                 )}
               </div>
             </button>
@@ -1498,28 +1513,29 @@ export function CalendarView({
 
   const arrow = (target: string, enabled: boolean, label: string, glyph: string) =>
     enabled ? (
-      <Link href={href({ d: target })} aria-label={label} className="btn-muted">
+      <Link href={href({ d: target })} aria-label={label} className="btn-muted text-base leading-none">
         {glyph}
       </Link>
     ) : (
-      <span aria-label={label} aria-disabled className="btn-muted opacity-30">
+      <span aria-label={label} aria-disabled className="btn-muted text-base leading-none opacity-30">
         {glyph}
       </span>
     )
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center gap-3">
         {arrow(prev, canPrev, 'Previous', '‹')}
-        <h1 className="min-w-48 text-xl font-black">{heading}</h1>
+        <h1 className="display min-w-52 text-[22px] leading-none">{heading}</h1>
         {arrow(next, canNext, 'Next', '›')}
-        <div className="ml-auto flex gap-1 rounded-lg border border-slate-800 p-0.5">
+        <div className="ml-auto flex gap-5 border-b border-rule">
           {VIEWS.map((v) => (
             <Link
               key={v.key}
               href={href({ view: v.key })}
-              className={`rounded-md px-3 py-1 text-xs font-medium ${
-                v.key === view ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'
+              aria-current={v.key === view ? 'page' : undefined}
+              className={`-mb-px border-b-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+                v.key === view ? 'border-chalk text-chalk' : 'border-transparent text-dim hover:text-chalk'
               }`}
             >
               {v.label}
@@ -1536,10 +1552,10 @@ export function CalendarView({
               key={l.slug}
               href={href({ leagues: toggleLeague(l.slug), myteam: false })}
               aria-pressed={on && !teamFilter}
-              className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
+              className={`num rounded-[2px] border px-2 py-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${
                 teamFilter ? 'pointer-events-none opacity-30' : ''
-              } ${on ? 'text-white' : 'border-slate-800 text-slate-500'}`}
-              style={on && !teamFilter ? { borderColor: l.accent, backgroundColor: `${l.accent}22` } : undefined}
+              } ${on ? '' : 'border-rule text-dim hover:text-chalk'}`}
+              style={on && !teamFilter ? { borderColor: l.accent, backgroundColor: `${l.accent}26`, color: l.accent } : undefined}
             >
               {l.shortName}
             </Link>
@@ -1549,8 +1565,8 @@ export function CalendarView({
           <Link
             href={href({ myteam: !myteam })}
             aria-pressed={myteam}
-            className={`rounded-full border px-2.5 py-1 text-xs font-medium ${
-              myteam ? 'border-amber-400 bg-amber-400/20 text-amber-200' : 'border-slate-800 text-slate-500'
+            className={`num rounded-[2px] border px-2 py-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${
+              myteam ? 'border-chalk bg-chalk text-pitch' : 'border-rule text-dim hover:text-chalk'
             }`}
           >
             ★ {pinned.name}
@@ -1580,8 +1596,8 @@ export function CalendarView({
                 <Link
                   key={key}
                   href={href({ d: key, view: 'day' })}
-                  className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs ${
-                    key === anchor ? 'bg-slate-800 text-white' : 'text-slate-400'
+                  className={`num shrink-0 rounded-[2px] px-2.5 py-1.5 text-[11px] font-medium ${
+                    key === anchor ? 'bg-chalk text-pitch' : 'text-dim'
                   }`}
                 >
                   {Number(key.slice(8))}
@@ -1599,11 +1615,11 @@ export function CalendarView({
         <div
           role="dialog"
           aria-label={dateHeading(`${openDay}T12:00:00Z`, 'UTC')}
-          className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto border-t border-slate-800 bg-slate-950/95 p-4 backdrop-blur sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96 sm:rounded-xl sm:border"
+          className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96 sm:rounded-[3px] sm:border"
         >
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold">{dateHeading(`${openDay}T12:00:00Z`, 'UTC')}</h2>
-            <button onClick={() => setOpenDay(null)} className="text-sm text-slate-400 hover:text-slate-200">
+            <h2 className="display text-[13px] leading-none">{dateHeading(`${openDay}T12:00:00Z`, 'UTC')}</h2>
+            <button onClick={() => setOpenDay(null)} className="btn-muted">
               Close
             </button>
           </div>
@@ -1760,26 +1776,26 @@ export default async function GamePage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Link href="/calendar" className="text-xs text-slate-400 hover:text-slate-200">
+      <Link href="/calendar" className="btn-muted inline-block pl-0">
         ‹ Calendar
       </Link>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <span
-          className="inline-block rounded px-1.5 py-0.5 text-[10px] font-bold"
-          style={{ backgroundColor: `${league.accent}33`, color: league.accent }}
+          className="num inline-block rounded-[2px] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+          style={{ backgroundColor: `${league.accent}26`, color: league.accent }}
         >
           {league.name}
         </span>
         <FixtureList fixtures={[fixture]} />
-        {fixture.venue && <p className="text-sm text-slate-400">📍 {fixture.venue}</p>}
+        {fixture.venue && <p className="eyebrow">{fixture.venue}</p>}
       </div>
 
-      <div className="flex flex-wrap gap-3 text-sm">
-        <Link href={teamLink(fixture.home.name)} className="btn-muted">
+      <div className="flex flex-wrap gap-2">
+        <Link href={teamLink(fixture.home.name)} className="btn">
           {fixture.home.name}
         </Link>
-        <Link href={teamLink(fixture.away.name)} className="btn-muted">
+        <Link href={teamLink(fixture.away.name)} className="btn">
           {fixture.away.name}
         </Link>
       </div>
@@ -1817,14 +1833,15 @@ git commit -m "feat: per-game page"
 
 - [ ] **Step 1: Add the Calendar pill**
 
-In `src/components/LeagueNav.tsx`, after the `LEAGUES.map(...)` block and still inside the `<nav>`:
+`LeagueNav` renders underline tabs, not pills. Read the current file first. After the `LEAGUES.map(...)` block and still inside the `<nav>`, add a rule and a matching tab whose underline is `chalk` (the calendar belongs to no league, and chalk is the app's action color):
 
 ```tsx
-      <span aria-hidden className="mx-1 w-px shrink-0 self-stretch bg-slate-800" />
+      <span aria-hidden className="my-1 w-px shrink-0 self-stretch bg-rule" />
       <Link
         href="/calendar"
-        className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ${
-          pathname === '/calendar' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'
+        aria-current={pathname === '/calendar' ? 'page' : undefined}
+        className={`whitespace-nowrap border-b-2 py-1 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+          pathname === '/calendar' ? 'border-chalk text-chalk' : 'border-transparent text-dim hover:text-chalk'
         }`}
       >
         Calendar
