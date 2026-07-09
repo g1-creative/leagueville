@@ -7,8 +7,8 @@ export function SelectionTray() {
   if (picks.length === 0) return null
   const href = `/api/cal/custom?ids=${encodeURIComponent(picks.join(','))}`
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center gap-4">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
+      <div className="flex items-center gap-4">
         <span className="text-sm font-medium">
           {picks.length} game{picks.length === 1 ? '' : 's'} selected
         </span>

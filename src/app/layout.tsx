@@ -23,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-slate-100 antialiased`}>
         <TimezoneProvider>
           <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
-            <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
+            <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
               <Link href="/" className="text-lg font-black tracking-tight">
                 ⚽ Leagueville
               </Link>
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </div>
             </div>
           </header>
-          <main className="mx-auto max-w-5xl px-4 py-6 pb-24">{children}</main>
+          <main className="px-4 py-6 pb-24 sm:px-6 lg:px-8">{children}</main>
           <SelectionTray />
           <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
             Data from ESPN and TheSportsDB. Not affiliated with any league or club.
