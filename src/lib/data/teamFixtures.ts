@@ -1,6 +1,7 @@
 import { CUPS, type Competition, type Region } from '../leagues'
-import type { Fixture } from '../types'
+import type { Fixture, Team } from '../types'
 import { getSeasonFixtures } from './fixtures'
+import { slugify } from '../slugify'
 
 // The continental competitions each domestic region feeds into.
 // 'usa' has none beyond its domestic cups (Leagues Cup already carries region 'usa').
@@ -45,4 +46,24 @@ export async function getTeamFixtures(league: Competition, teamId: string): Prom
   const competitions = [league, ...cupsForLeague(league)]
   const sets = await Promise.all(competitions.map((c) => getSeasonFixtures(c).catch(() => [])))
   return mergeTeamFixtures(sets, teamId)
+}
+
+/** Unique participating teams derived from a fixture set, sorted by name. */
+export function teamsFromFixtures(fixtures: Fixture[]): Team[] {
+  const byId = new Map<string, Team>()
+  for (const f of fixtures) {
+    for (const side of [f.home, f.away]) {
+      if (!byId.has(side.id)) {
+        byId.set(side.id, {
+          id: side.id,
+          slug: slugify(side.name),
+          name: side.name,
+          shortName: side.name,
+          abbrev: side.abbrev,
+          logo: side.logo,
+        })
+      }
+    }
+  }
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name))
 }

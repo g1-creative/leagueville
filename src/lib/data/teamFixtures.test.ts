@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cupsForLeague, mergeTeamFixtures } from './teamFixtures'
+import { cupsForLeague, mergeTeamFixtures, teamsFromFixtures } from './teamFixtures'
 import { getLeague } from '../leagues'
 import type { Fixture } from '../types'
 
@@ -77,5 +77,29 @@ describe('mergeTeamFixtures', () => {
     const merged = mergeTeamFixtures([league, ucl], '99')
     expect(merged.map((f) => f.id)).toEqual(['L1', 'L2'])
     expect(merged.every((f) => f.competition !== 'champions-league')).toBe(true)
+  })
+})
+
+describe('teamsFromFixtures', () => {
+  it('derives unique participating teams sorted by name', () => {
+    const teams = teamsFromFixtures([
+      {
+        id: '1', competition: 'fa-cup', kickoff: '2027-01-09T15:00:00.000Z',
+        status: 'scheduled', statusDetail: '',
+        home: { id: '359', name: 'Arsenal', abbrev: 'ARS', logo: 'https://a.espncdn.com/ars.png' },
+        away: { id: '380', name: 'Wrexham' },
+      },
+      {
+        id: '2', competition: 'fa-cup', kickoff: '2027-01-10T15:00:00.000Z',
+        status: 'scheduled', statusDetail: '',
+        home: { id: '364', name: 'Liverpool' },
+        away: { id: '359', name: 'Arsenal' },
+      },
+    ])
+    expect(teams.map((t) => t.name)).toEqual(['Arsenal', 'Liverpool', 'Wrexham'])
+    expect(teams[0]).toEqual({
+      id: '359', slug: 'arsenal', name: 'Arsenal', shortName: 'Arsenal',
+      abbrev: 'ARS', logo: 'https://a.espncdn.com/ars.png',
+    })
   })
 })
