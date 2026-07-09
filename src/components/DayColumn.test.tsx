@@ -51,9 +51,29 @@ describe('DayColumn', () => {
     render(
       <DayColumn
         dayKey="2026-08-22"
-        fixtures={[fixture(), fixture({ id: '2', status: 'final' }), fixture({ id: '3', status: 'postponed' })]}
+        fixtures={[
+          fixture({
+            id: '1',
+            home: { id: 'h1', name: 'Liverpool' },
+            away: { id: 'a1', name: 'Everton' },
+          }),
+          fixture({
+            id: '2',
+            status: 'final',
+            home: { id: 'h2', name: 'Arsenal' },
+            away: { id: 'a2', name: 'Chelsea' },
+          }),
+          fixture({
+            id: '3',
+            status: 'postponed',
+            home: { id: 'h3', name: 'Fulham' },
+            away: { id: 'a3', name: 'Brentford' },
+          }),
+        ]}
       />,
     )
-    expect(screen.getAllByRole('button', { name: /add .* to calendar/i })).toHaveLength(2)
+    expect(screen.getByRole('button', { name: 'Add Liverpool vs Everton to calendar' })).toBeDefined()
+    expect(screen.getByRole('button', { name: 'Add Arsenal vs Chelsea to calendar' })).toBeDefined()
+    expect(screen.queryByRole('button', { name: 'Add Fulham vs Brentford to calendar' })).toBeNull()
   })
 })

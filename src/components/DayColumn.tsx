@@ -16,7 +16,7 @@ export function DayColumn({
     <div className="flex min-w-0 flex-col gap-2" data-day={dayKey}>
       {heading && <h3 className="eyebrow">{heading}</h3>}
       {fixtures.length === 0 ? (
-        <p className="py-6 text-center text-sm text-rule">—</p>
+        <p className="py-6 text-center text-sm text-dim">—</p>
       ) : (
         <div className="board">
           {fixtures.map((f) => (
