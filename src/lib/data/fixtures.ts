@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { espnJson } from './espn'
 import { seasonRange, type League, type LeagueSlug } from '../leagues'
 import type { Fixture, FixtureSide } from '../types'
@@ -71,13 +72,21 @@ function normalizeAll(events: RawEvent[] | undefined, league: League): Fixture[]
     .sort((a, b) => a.kickoff.localeCompare(b.kickoff))
 }
 
-export async function getSeasonFixtures(league: League): Promise<Fixture[]> {
-  const { start, end } = seasonRange(league, new Date())
+async function fetchSeasonFixtures(league: League, start: string, end: string): Promise<Fixture[]> {
   const data = await espnJson<{ events?: RawEvent[] }>(
     `/site/v2/sports/soccer/${league.espn}/scoreboard?dates=${start}-${end}&limit=1000`,
-    21600,
+    0, // raw payload exceeds the 2 MB data-cache cap — cache the normalized result instead
   )
   return normalizeAll(data.events, league)
+}
+
+export async function getSeasonFixtures(league: League): Promise<Fixture[]> {
+  const { start, end } = seasonRange(league, new Date())
+  return unstable_cache(
+    () => fetchSeasonFixtures(league, start, end),
+    ['season-fixtures', league.slug, `${start}-${end}`],
+    { revalidate: 21600 },
+  )()
 }
 
 export async function getScoreboardWindow(league: League): Promise<Fixture[]> {
