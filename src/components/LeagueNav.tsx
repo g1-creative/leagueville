@@ -23,6 +23,16 @@ export function LeagueNav() {
           </Link>
         )
       })}
+      <span aria-hidden className="my-1 w-px shrink-0 self-stretch bg-rule" />
+      <Link
+        href="/calendar"
+        aria-current={pathname === '/calendar' ? 'page' : undefined}
+        className={`whitespace-nowrap border-b-2 py-1 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+          pathname === '/calendar' ? 'border-chalk text-chalk' : 'border-transparent text-dim hover:text-chalk'
+        }`}
+      >
+        Calendar
+      </Link>
     </nav>
   )
 }

@@ -8,6 +8,10 @@ Ligue 1, Brasileirão and MLS** — with one-click calendar export.
 - Full season fixtures & results per league, kickoff times in *your* timezone
   (auto-detected, overridable in the header)
 - Live scores for in-progress games (auto-refreshing Today view)
+- **Calendar view** (`/calendar`) — every league's games in a month, week or
+  day layout, in your timezone. Filter by league or by your pinned team;
+  click a game for its own page, or hit `+` to drop it straight into Apple
+  Calendar, Outlook or Google Calendar
 - League tables (incl. MLS conferences) and team pages: club bio, squad,
   season history
 - **Calendar export** at three levels:
