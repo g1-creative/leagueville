@@ -19,7 +19,7 @@ export async function GET(
   }
   if (!fixture) return new Response('Unknown game', { status: 404 })
 
-  const events = fixturesToCalEvents([fixture], league.name)
+  const events = fixturesToCalEvents([fixture])
   if (events.length === 0) return new Response('Game has no scheduled kickoff', { status: 404 })
 
   const ics = buildIcs(`${fixture.home.name} vs ${fixture.away.name} — Leagueville`, events)

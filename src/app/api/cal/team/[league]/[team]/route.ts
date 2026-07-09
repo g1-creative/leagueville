@@ -16,7 +16,7 @@ export async function GET(
     const fixtures = (await getSeasonFixtures(league)).filter(
       (f) => f.home.id === team.id || f.away.id === team.id,
     )
-    const ics = buildIcs(`${team.name} — Leagueville`, fixturesToCalEvents(fixtures, league.name))
+    const ics = buildIcs(`${team.name} — Leagueville`, fixturesToCalEvents(fixtures))
     return new Response(ics, {
       headers: {
         'Content-Type': 'text/calendar; charset=utf-8',

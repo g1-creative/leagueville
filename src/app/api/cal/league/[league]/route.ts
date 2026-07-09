@@ -13,7 +13,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ league:
   if (!league) return new Response('Unknown league', { status: 404 })
   try {
     const fixtures = await getSeasonFixtures(league)
-    const ics = buildIcs(`${league.name} — Leagueville`, fixturesToCalEvents(fixtures, league.name))
+    const ics = buildIcs(`${league.name} — Leagueville`, fixturesToCalEvents(fixtures))
     return new Response(ics, {
       headers: { ...ICS_HEADERS, 'Content-Disposition': `inline; filename="${league.slug}.ics"` },
     })

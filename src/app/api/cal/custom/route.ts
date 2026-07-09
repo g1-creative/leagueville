@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       const league = getLeague(slug)
       if (!league) continue
       const fixtures = (await getSeasonFixtures(league)).filter((f) => wanted.has(f.id))
-      events.push(...fixturesToCalEvents(fixtures, league.name))
+      events.push(...fixturesToCalEvents(fixtures))
     }
   } catch {
     return new Response('Fixture data temporarily unavailable', { status: 503 })

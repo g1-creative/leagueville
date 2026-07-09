@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { fixturesToCalEvents, googleCalendarUrl } from '@/lib/ics'
-import { getCompetition } from '@/lib/leagues'
 import type { Fixture } from '@/lib/types'
 
 export function AddToCalendarMenu({ fixture }: { fixture: Fixture }) {
@@ -29,8 +28,7 @@ export function AddToCalendarMenu({ fixture }: { fixture: Fixture }) {
     }
   }, [open])
 
-  const competition = getCompetition(fixture.competition)
-  const [event] = fixturesToCalEvents([fixture], competition?.name ?? '')
+  const [event] = fixturesToCalEvents([fixture])
   if (!event) return null // postponed games have no kickoff to add
 
   const label = `${fixture.home.name} vs ${fixture.away.name}`

@@ -49,10 +49,7 @@ describe('fixturesToCalEvents', () => {
   }
 
   it('maps fixtures and skips postponed', () => {
-    const events = fixturesToCalEvents(
-      [base, { ...base, id: '2', status: 'postponed' }],
-      'Premier League',
-    )
+    const events = fixturesToCalEvents([base, { ...base, id: '2', status: 'postponed' }])
     expect(events).toHaveLength(1)
     expect(events[0].uid).toBe('premier-league-1@leagueville')
     expect(events[0].title).toBe('⚽ Liverpool vs Everton')
@@ -60,11 +57,16 @@ describe('fixturesToCalEvents', () => {
     expect(events[0].start.toISOString()).toBe('2026-08-22T14:00:00.000Z')
   })
 
+  it('describes each fixture with its own competition name', () => {
+    const events = fixturesToCalEvents([base, { ...base, id: '9', competition: 'fa-cup' }])
+    expect(events[0].description).toBe('Premier League')
+    expect(events[1].description).toBe('FA Cup')
+  })
+
   it('appends the final score for finished games', () => {
-    const events = fixturesToCalEvents(
-      [{ ...base, status: 'final', home: { id: 'h', name: 'Liverpool', score: 2 }, away: { id: 'a', name: 'Everton', score: 1 } }],
-      'Premier League',
-    )
+    const events = fixturesToCalEvents([
+      { ...base, status: 'final', home: { id: 'h', name: 'Liverpool', score: 2 }, away: { id: 'a', name: 'Everton', score: 1 } },
+    ])
     expect(events[0].description).toBe('Premier League — FT 2–1')
   })
 })
