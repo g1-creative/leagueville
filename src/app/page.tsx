@@ -26,13 +26,11 @@ export default async function Home() {
 
   return (
     <div className="space-y-10">
+      {(live.length > 0 || upcoming.length > 0) && <AutoRefresh seconds={60} />}
       {live.length > 0 && (
-        <>
-          <AutoRefresh seconds={60} />
-          <Section title="Live now">
-            <FixtureList fixtures={live} showLeague />
-          </Section>
-        </>
+        <Section title="Live now">
+          <FixtureList fixtures={live} showLeague />
+        </Section>
       )}
       {upcoming.length > 0 && (
         <Section title="Up next">
