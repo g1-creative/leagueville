@@ -1371,14 +1371,14 @@ describe('CalendarView', () => {
 
   it('opens a day panel when a month cell is clicked', () => {
     render(<CalendarView {...props} view="month" anchor="2026-07-15" leagues={ALL} />)
-    fireEvent.click(screen.getByRole('button', { name: /^15\b/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^July 15, 2026\b/ }))
     const panel = screen.getByRole('dialog')
     expect(panel.textContent).toContain('Liverpool')
   })
 
   it('closes the day panel on Escape', () => {
     render(<CalendarView {...props} view="month" anchor="2026-07-15" leagues={ALL} />)
-    fireEvent.click(screen.getByRole('button', { name: /^15\b/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^July 15, 2026\b/ }))
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('dialog')).toBeNull()
   })
