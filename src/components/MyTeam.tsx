@@ -1,0 +1,54 @@
+'use client'
+
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+const KEY = 'lv-myteam'
+
+interface MyTeam {
+  league: string
+  slug: string
+  name: string
+}
+
+function read(): MyTeam | null {
+  try {
+    return JSON.parse(window.localStorage.getItem(KEY) ?? 'null')
+  } catch {
+    return null
+  }
+}
+
+export function MyTeamLink() {
+  const [team, setTeam] = useState<MyTeam | null>(null)
+  useEffect(() => {
+    setTeam(read())
+    const onChange = () => setTeam(read())
+    window.addEventListener('lv-myteam', onChange)
+    return () => window.removeEventListener('lv-myteam', onChange)
+  }, [])
+  if (!team) return null
+  return (
+    <Link href={`/${team.league}/${team.slug}`} className="whitespace-nowrap text-xs font-medium text-amber-300">
+      ★ {team.name}
+    </Link>
+  )
+}
+
+export function PinTeamButton({ league, slug, name }: MyTeam) {
+  const [pinned, setPinned] = useState(false)
+  useEffect(() => {
+    setPinned(read()?.slug === slug)
+  }, [slug])
+  const togglePin = () => {
+    const next = read()?.slug === slug ? null : { league, slug, name }
+    window.localStorage.setItem(KEY, JSON.stringify(next))
+    setPinned(next !== null)
+    window.dispatchEvent(new Event('lv-myteam'))
+  }
+  return (
+    <button onClick={togglePin} className="btn-muted">
+      {pinned ? '★ My team' : '☆ Pin as my team'}
+    </button>
+  )
+}
