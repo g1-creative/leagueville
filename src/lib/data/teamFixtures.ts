@@ -43,9 +43,11 @@ export function mergeTeamFixtures(sets: Fixture[][], teamId: string): Fixture[] 
 
 /** A team's full season: league games plus every cup game it appears in. */
 export async function getTeamFixtures(league: Competition, teamId: string): Promise<Fixture[]> {
-  const competitions = [league, ...cupsForLeague(league)]
-  const sets = await Promise.all(competitions.map((c) => getSeasonFixtures(c).catch(() => [])))
-  return mergeTeamFixtures(sets, teamId)
+  const [leagueFixtures, ...cupSets] = await Promise.all([
+    getSeasonFixtures(league),
+    ...cupsForLeague(league).map((c) => getSeasonFixtures(c).catch(() => [])),
+  ])
+  return mergeTeamFixtures([leagueFixtures, ...cupSets], teamId)
 }
 
 /** Unique participating teams derived from a fixture set, sorted by name. */

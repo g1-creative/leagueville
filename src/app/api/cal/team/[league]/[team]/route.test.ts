@@ -43,4 +43,13 @@ describe('team calendar route', () => {
     })
     expect(res.status).toBe(404)
   })
+
+  it('503s when the league fixture fetch fails, rather than serving an empty calendar', async () => {
+    const { getTeamFixtures } = await import('@/lib/data/teamFixtures')
+    vi.mocked(getTeamFixtures).mockRejectedValueOnce(new Error('ESPN outage'))
+    const res = await GET(new Request('http://localhost/api/cal/team/premier-league/arsenal.ics'), {
+      params: Promise.resolve({ league: 'premier-league', team: 'arsenal.ics' }),
+    })
+    expect(res.status).toBe(503)
+  })
 })

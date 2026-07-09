@@ -1,7 +1,12 @@
-import { describe, it, expect } from 'vitest'
-import { cupsForLeague, mergeTeamFixtures, teamsFromFixtures } from './teamFixtures'
+import { describe, it, expect, vi } from 'vitest'
+import { cupsForLeague, mergeTeamFixtures, teamsFromFixtures, getTeamFixtures } from './teamFixtures'
+import { getSeasonFixtures } from './fixtures'
 import { getLeague } from '../leagues'
 import type { Fixture } from '../types'
+
+vi.mock('./fixtures', () => ({
+  getSeasonFixtures: vi.fn(),
+}))
 
 const fixture = (
   id: string,
@@ -77,6 +82,29 @@ describe('mergeTeamFixtures', () => {
     const merged = mergeTeamFixtures([league, ucl], '99')
     expect(merged.map((f) => f.id)).toEqual(['L1', 'L2'])
     expect(merged.every((f) => f.competition !== 'champions-league')).toBe(true)
+  })
+})
+
+describe('getTeamFixtures', () => {
+  const mockedGetSeasonFixtures = vi.mocked(getSeasonFixtures)
+  const mls = getLeague('mls')!
+
+  it('rejects when the fetch for the team\'s own league rejects', async () => {
+    mockedGetSeasonFixtures.mockImplementation(async (c) => {
+      if (c.slug === mls.slug) throw new Error('ESPN outage')
+      return []
+    })
+    await expect(getTeamFixtures(mls, '359')).rejects.toThrow()
+  })
+
+  it('does not reject when only a cup fetch rejects — the league fixtures still come back', async () => {
+    const leagueFixture = fixture('L1', 'mls', '2026-08-22T14:00:00.000Z')
+    mockedGetSeasonFixtures.mockImplementation(async (c) => {
+      if (c.slug === mls.slug) return [leagueFixture]
+      throw new Error('cup ESPN outage')
+    })
+    const result = await getTeamFixtures(mls, '359')
+    expect(result.map((f) => f.id)).toEqual(['L1'])
   })
 })
 
