@@ -12,6 +12,11 @@ vi.mock('@/lib/data/fixtures', () => ({
       status: 'final', statusDetail: 'FT',
       home: { id: 'h', name: 'Arsenal', score: 2 }, away: { id: 'a', name: 'Chelsea', score: 1 },
     },
+    {
+      id: '3', league: 'premier-league', kickoff: '2026-08-24T14:00:00.000Z',
+      status: 'postponed', statusDetail: '', venue: 'Stamford Bridge',
+      home: { id: 'h', name: 'Manchester City' }, away: { id: 'a', name: 'Liverpool' },
+    },
   ]),
 }))
 
@@ -51,5 +56,9 @@ describe('single-game calendar route', () => {
     const { getSeasonFixtures } = await import('@/lib/data/fixtures')
     vi.mocked(getSeasonFixtures).mockRejectedValueOnce(new Error('upstream down'))
     expect((await call('premier-league', '1')).status).toBe(503)
+  })
+
+  it('404s a postponed game', async () => {
+    expect((await call('premier-league', '3')).status).toBe(404)
   })
 })
