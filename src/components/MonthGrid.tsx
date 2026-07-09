@@ -9,8 +9,22 @@ import { useTz } from './TimezoneProvider'
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MAX_CHIPS = 3
 
+const dayLabelFormat = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+})
+
 function abbrev(name: string): string {
   return name.slice(0, 3).toUpperCase()
+}
+
+function dayCellLabel(key: string, gameCount: number): string {
+  const formattedDate = dayLabelFormat.format(new Date(`${key}T12:00:00Z`))
+  const gamesText =
+    gameCount === 0 ? 'no games' : gameCount === 1 ? '1 game' : `${gameCount} games`
+  return `${formattedDate} — ${gamesText}`
 }
 
 export function MonthGrid({
@@ -51,9 +65,7 @@ export function MonthGrid({
               onClick={() => onSelectDay(key)}
               data-today={isToday}
               data-outside={outside}
-              aria-label={`${Number(key.slice(8))} ${
-                games.length === 1 ? '1 game' : `${games.length} games`
-              }`}
+              aria-label={dayCellLabel(key, games.length)}
               className={`min-h-16 bg-board p-1.5 text-left align-top transition-colors hover:bg-board-hi sm:min-h-28 ${
                 outside ? 'opacity-35' : ''
               }`}
