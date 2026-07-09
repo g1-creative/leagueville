@@ -131,6 +131,14 @@ describe('CalendarView', () => {
     expect(myteamChip.getAttribute('aria-pressed')).toBe('true')
   })
 
+  it('keeps the mobile week strip in week view, not day view', () => {
+    render(<CalendarView {...props} view="week" anchor="2026-07-15" leagues={ALL} />)
+    const chip = screen.getByRole('link', { name: '15' })
+    expect(chip.getAttribute('href')).toContain('view=week')
+    expect(chip.getAttribute('href')).not.toContain('view=day')
+    expect(chip.getAttribute('href')).toContain('d=2026-07-15')
+  })
+
   it('shows the weekday and day number in week-view column headings', () => {
     render(<CalendarView {...props} view="week" anchor="2026-07-15" leagues={ALL} />)
     const expected = new Intl.DateTimeFormat('en-US', {

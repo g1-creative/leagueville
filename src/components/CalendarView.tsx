@@ -127,7 +127,7 @@ export function CalendarView({
       : LEAGUES.filter((l) => leagues.includes(l.slug) || l.slug === slug).map((l) => l.slug)
 
   const bounds = seasonDayBounds(new Date(`${today}T00:00:00Z`))
-  const byDay = bucketByDay(visible, tz)
+  const byDay = useMemo(() => bucketByDay(visible, tz), [visible, tz])
   const prev = shiftAnchor(anchor, view, -1)
   const next = shiftAnchor(anchor, view, 1)
   const canPrev = canShift(anchor, view, -1, bounds)
@@ -222,9 +222,7 @@ export function CalendarView({
         )}
       </div>
 
-      {view === 'month' && (
-        <MonthGrid anchor={anchor} fixtures={visible} today={today} onSelectDay={openDayPanel} />
-      )}
+      {view === 'month' && <MonthGrid anchor={anchor} byDay={byDay} onSelectDay={openDayPanel} />}
 
       {view === 'week' && (
         <>
@@ -243,7 +241,7 @@ export function CalendarView({
               {weekKeys(anchor).map((key) => (
                 <Link
                   key={key}
-                  href={href({ d: key, view: 'day' })}
+                  href={href({ d: key })}
                   className={`num shrink-0 rounded-[2px] px-2.5 py-1.5 text-[11px] font-medium ${
                     key === anchor ? 'bg-chalk text-pitch' : 'text-dim'
                   }`}

@@ -1,8 +1,8 @@
 'use client'
 
-import { bucketByDay, monthGridKeys, monthOf } from '@/lib/calendar'
+import { monthGridKeys, monthOf } from '@/lib/calendar'
 import { getLeague } from '@/lib/leagues'
-import { formatKickoff } from '@/lib/time'
+import { dateKey, formatKickoff } from '@/lib/time'
 import type { Fixture } from '@/lib/types'
 import { useTz } from './TimezoneProvider'
 
@@ -29,17 +29,19 @@ function dayCellLabel(key: string, gameCount: number): string {
 
 export function MonthGrid({
   anchor,
-  fixtures,
-  today,
+  byDay,
   onSelectDay,
 }: {
   anchor: string
-  fixtures: Fixture[]
-  today: string
+  byDay: Map<string, Fixture[]>
   onSelectDay: (dayKey: string) => void
 }) {
   const { tz } = useTz()
-  const byDay = bucketByDay(fixtures, tz)
+  // Recomputed every render so the ring tracks the current instant. On the
+  // server (and the client's first render) `tz` is 'UTC'; once
+  // TimezoneProvider's mount effect resolves the real zone, this — and the
+  // fixture buckets upstream — settle onto the viewer's local day.
+  const todayKey = dateKey(new Date().toISOString(), tz)
   const keys = monthGridKeys(anchor)
   const month = monthOf(anchor)
 
@@ -57,7 +59,7 @@ export function MonthGrid({
         {keys.map((key) => {
           const games = byDay.get(key) ?? []
           const outside = monthOf(key) !== month
-          const isToday = key === today
+          const isToday = key === todayKey
           const leagues = [...new Set(games.map((g) => g.league))]
           return (
             <button
