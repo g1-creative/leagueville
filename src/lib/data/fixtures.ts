@@ -5,7 +5,7 @@ import type { Fixture, FixtureSide } from '../types'
 interface RawCompetitor {
   homeAway: 'home' | 'away'
   winner?: boolean
-  score?: string | { displayValue?: string }
+  score?: string | { value?: number; displayValue?: string }
   team: {
     id: string
     displayName: string

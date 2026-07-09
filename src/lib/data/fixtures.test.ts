@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { normalizeEvent } from './fixtures'
+import { normalizeEvent, type RawEvent } from './fixtures'
 
-const finalEvent = {
+const finalEvent: RawEvent = {
   id: '2267073',
   date: '2025-08-15T19:00Z',
   competitions: [{
@@ -14,7 +14,7 @@ const finalEvent = {
   }],
 }
 
-const scheduledEvent = {
+const scheduledEvent: RawEvent = {
   id: '760001',
   date: '2026-08-22T14:00Z',
   competitions: [{
@@ -27,7 +27,7 @@ const scheduledEvent = {
 }
 
 // shape returned by the /teams/{id}/schedule endpoint: object scores, logos array
-const scheduleShapeEvent = {
+const scheduleShapeEvent: RawEvent = {
   id: '761440',
   date: '2026-05-02T23:30Z',
   competitions: [{
@@ -39,7 +39,7 @@ const scheduleShapeEvent = {
   }],
 }
 
-const postponedEvent = {
+const postponedEvent: RawEvent = {
   ...scheduledEvent,
   id: '760002',
   competitions: [{
