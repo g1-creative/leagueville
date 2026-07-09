@@ -136,3 +136,11 @@ everywhere times appear. Calendar exports always carry UTC timestamps.
 - User accounts / server-persisted preferences
 - Subscribable feeds for hand-picked selections (needs a DB)
 - More leagues
+
+## V1 scope waivers (recorded at final review)
+
+Two UX details from this spec were not implemented in v1 and are deferred,
+pending a product decision:
+
+- "Last updated X ago" stale-data indicator on pages served from cache.
+- League switcher remembering the last-visited league.
