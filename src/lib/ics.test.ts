@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildIcs, fixturesToCalEvents, type CalEvent } from './ics'
+import { buildIcs, fixturesToCalEvents, googleCalendarUrl, type CalEvent } from './ics'
 import type { Fixture } from './types'
 
 const dtstamp = new Date('2026-07-08T00:00:00Z')
@@ -66,5 +66,35 @@ describe('fixturesToCalEvents', () => {
       'Premier League',
     )
     expect(events[0].description).toBe('Premier League — FT 2–1')
+  })
+})
+
+describe('googleCalendarUrl', () => {
+  const url = new URL(googleCalendarUrl(ev))
+
+  it('points at the Google template renderer', () => {
+    expect(url.origin + url.pathname).toBe('https://calendar.google.com/calendar/render')
+    expect(url.searchParams.get('action')).toBe('TEMPLATE')
+  })
+
+  it('carries the title, location and description', () => {
+    expect(url.searchParams.get('text')).toBe('⚽ Everton vs Crystal Palace')
+    expect(url.searchParams.get('location')).toBe('Goodison Park, Liverpool')
+    expect(url.searchParams.get('details')).toBe('Premier League')
+  })
+
+  it('spans start to start-plus-duration in compact UTC', () => {
+    expect(url.searchParams.get('dates')).toBe('20260822T140000Z/20260822T160000Z')
+  })
+
+  it('honours a custom duration', () => {
+    const custom = new URL(googleCalendarUrl({ ...ev, durationMinutes: 90 }))
+    expect(custom.searchParams.get('dates')).toBe('20260822T140000Z/20260822T153000Z')
+  })
+
+  it('omits location and details when absent', () => {
+    const bare = new URL(googleCalendarUrl({ uid: 'u', start: ev.start, title: 'T' }))
+    expect(bare.searchParams.has('location')).toBe(false)
+    expect(bare.searchParams.has('details')).toBe(false)
   })
 })

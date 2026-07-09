@@ -57,6 +57,19 @@ export function buildIcs(calName: string, events: CalEvent[], dtstamp: Date = ne
   return lines.map(foldLine).join('\r\n') + '\r\n'
 }
 
+/** A Google Calendar "add event" deep link for a single event. */
+export function googleCalendarUrl(e: CalEvent): string {
+  const end = new Date(e.start.getTime() + (e.durationMinutes ?? 120) * 60_000)
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: e.title,
+    dates: `${icsDate(e.start)}/${icsDate(end)}`,
+  })
+  if (e.location) params.set('location', e.location)
+  if (e.description) params.set('details', e.description)
+  return `https://calendar.google.com/calendar/render?${params}`
+}
+
 export function fixturesToCalEvents(fixtures: Fixture[], leagueName: string): CalEvent[] {
   return fixtures
     .filter((f) => f.status !== 'postponed')
