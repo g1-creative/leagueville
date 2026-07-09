@@ -83,6 +83,22 @@ export function getCup(slug: string): Competition | undefined {
   return CUPS.find((c) => c.slug === slug)
 }
 
+const REGION_LABELS: { region: Region; label: string }[] = [
+  { region: 'europe', label: 'Europe' },
+  { region: 'england', label: 'England' },
+  { region: 'spain', label: 'Spain' },
+  { region: 'france', label: 'France' },
+  { region: 'usa', label: 'United States' },
+  { region: 'south-america', label: 'South America' },
+]
+
+/** The 11 cups grouped by region for the /cups browse page. Regions with no cups (brazil) are omitted. */
+export function cupsByRegion(): { region: Region; label: string; cups: Competition[] }[] {
+  return REGION_LABELS
+    .map(({ region, label }) => ({ region, label, cups: CUPS.filter((c) => c.region === region) }))
+    .filter((g) => g.cups.length > 0)
+}
+
 export function seasonStartYear(league: League, now: Date): number {
   const y = now.getUTCFullYear()
   if (league.seasonType === 'calendar-year') return y

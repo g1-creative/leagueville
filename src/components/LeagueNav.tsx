@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LEAGUES } from '@/lib/leagues'
 
+const CUPS_ACCENT = '#eab308'
+
 export function LeagueNav() {
   const pathname = usePathname()
+  const cupsActive = pathname === '/cups' || pathname.startsWith('/cups/')
   return (
     <nav className="flex gap-1 overflow-x-auto">
       {LEAGUES.map((l) => {
@@ -23,6 +26,15 @@ export function LeagueNav() {
           </Link>
         )
       })}
+      <Link
+        href="/cups"
+        className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ${
+          cupsActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+        }`}
+        style={cupsActive ? { backgroundColor: `${CUPS_ACCENT}33`, boxShadow: `inset 0 -2px 0 ${CUPS_ACCENT}` } : undefined}
+      >
+        Cups
+      </Link>
     </nav>
   )
 }

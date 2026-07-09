@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { COMPETITIONS, CUPS, LEAGUES, getCompetition, getCup, getLeague, seasonRange, seasonStartYear } from './leagues'
+import { COMPETITIONS, CUPS, LEAGUES, cupsByRegion, getCompetition, getCup, getLeague, seasonRange, seasonStartYear } from './leagues'
 
 describe('league registry', () => {
   it('has the 5 leagues in display order', () => {
@@ -57,6 +57,20 @@ describe('competition registry', () => {
     expect(getCup('fa-cup')?.seasonType).toBe('cross-year')
     expect(LEAGUES.every((l) => typeof l.tsdbName === 'string')).toBe(true)
     expect(CUPS.every((c) => c.tsdbName === undefined)).toBe(true)
+  })
+})
+
+describe('cupsByRegion', () => {
+  it('groups the 11 cups by region in display order, skipping regions with none', () => {
+    const groups = cupsByRegion()
+    expect(groups.map((g) => g.region)).toEqual([
+      'europe', 'england', 'spain', 'france', 'usa', 'south-america',
+    ])
+    expect(groups.flatMap((g) => g.cups)).toHaveLength(11)
+    expect(groups.find((g) => g.region === 'europe')!.cups.map((c) => c.slug)).toEqual([
+      'champions-league', 'europa-league', 'conference-league',
+    ])
+    expect(groups.find((g) => g.region === 'south-america')!.label).toBe('South America')
   })
 })
 
