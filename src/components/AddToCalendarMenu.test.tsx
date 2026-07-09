@@ -1,13 +1,7 @@
-import { describe, it, expect, afterEach } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 import type { Fixture } from '@/lib/types'
 import { AddToCalendarMenu } from './AddToCalendarMenu'
-
-// This project's vitest config doesn't set `test.globals: true`, so
-// @testing-library/react's built-in auto-cleanup (which checks for a
-// global `afterEach`) never registers. Do it explicitly so each test
-// starts from an empty DOM instead of accumulating prior renders.
-afterEach(cleanup)
 
 const base: Fixture = {
   id: '77',
