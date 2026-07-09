@@ -1,5 +1,5 @@
 // Newer ICU inserts U+202F (narrow no-break space) before AM/PM; normalize it.
-const nnbsp = / /g
+const nnbsp = /\u202f/g
 
 export function formatKickoff(iso: string, tz: string): string {
   return new Intl.DateTimeFormat('en-US', {
