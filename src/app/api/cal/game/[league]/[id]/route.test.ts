@@ -61,4 +61,9 @@ describe('single-game calendar route', () => {
   it('404s a postponed game', async () => {
     expect((await call('premier-league', '3')).status).toBe(404)
   })
+
+  it('resolves cup slugs so cup fixtures can be downloaded', async () => {
+    const res = await call('fa-cup', '1')
+    expect(res.status).toBe(200)
+  })
 })

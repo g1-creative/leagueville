@@ -1,4 +1,4 @@
-import { getLeague } from '@/lib/leagues'
+import { getCompetition } from '@/lib/leagues'
 import { getSeasonFixtures } from '@/lib/data/fixtures'
 import { buildIcs, fixturesToCalEvents } from '@/lib/ics'
 
@@ -7,8 +7,8 @@ export async function GET(
   { params }: { params: Promise<{ league: string; id: string }> },
 ) {
   const { league: rawSlug, id: rawId } = await params
-  const league = getLeague(rawSlug)
-  if (!league) return new Response('Unknown league', { status: 404 })
+  const league = getCompetition(rawSlug)
+  if (!league) return new Response('Unknown competition', { status: 404 })
   const id = rawId.replace(/\.ics$/, '')
 
   let fixture

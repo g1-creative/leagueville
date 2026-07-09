@@ -1,4 +1,4 @@
-import { getLeague } from '@/lib/leagues'
+import { getCompetition } from '@/lib/leagues'
 import { getSeasonFixtures } from '@/lib/data/fixtures'
 import { buildIcs, fixturesToCalEvents, type CalEvent } from '@/lib/ics'
 
@@ -10,20 +10,20 @@ export async function GET(req: Request) {
     .slice(0, 200)
   if (ids.length === 0) return new Response('No games selected', { status: 400 })
 
-  const byLeague = new Map<string, Set<string>>()
+  const byCompetition = new Map<string, Set<string>>()
   for (const token of ids) {
     const [slug, id] = token.split(':')
     if (!slug || !id) continue
-    if (!byLeague.has(slug)) byLeague.set(slug, new Set())
-    byLeague.get(slug)!.add(id)
+    if (!byCompetition.has(slug)) byCompetition.set(slug, new Set())
+    byCompetition.get(slug)!.add(id)
   }
 
   const events: CalEvent[] = []
   try {
-    for (const [slug, wanted] of byLeague) {
-      const league = getLeague(slug)
-      if (!league) continue
-      const fixtures = (await getSeasonFixtures(league)).filter((f) => wanted.has(f.id))
+    for (const [slug, wanted] of byCompetition) {
+      const competition = getCompetition(slug)
+      if (!competition) continue
+      const fixtures = (await getSeasonFixtures(competition)).filter((f) => wanted.has(f.id))
       events.push(...fixturesToCalEvents(fixtures))
     }
   } catch {
