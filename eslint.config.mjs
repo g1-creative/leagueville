@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // Agent worktrees hold checkouts of this repo.
+      ".claude/**",
     ],
   },
 ];
