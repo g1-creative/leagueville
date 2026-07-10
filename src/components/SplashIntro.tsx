@@ -1,5 +1,6 @@
 'use client'
 
+import { preload } from 'react-dom'
 import { useEffect, useState } from 'react'
 
 const KEY = 'lv-splash'
@@ -8,6 +9,9 @@ const KEY = 'lv-splash'
 // globals.css); JS only decides whether to mount and when to unmount. The app
 // renders concurrently underneath, so the splash costs no time-to-interactive.
 export function SplashIntro() {
+  // WebP, small enough to land within the 1.6s splash window even cold.
+  preload('/brand/logo-full.webp', { as: 'image' })
+  preload('/brand/ball.webp', { as: 'image' })
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -37,9 +41,9 @@ export function SplashIntro() {
     >
       <div className="lv-splash-stage">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo-full.png" alt="" className="lv-splash-logo" />
+        <img src="/brand/logo-full.webp" alt="" className="lv-splash-logo" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/ball.png" alt="" className="lv-splash-ball" />
+        <img src="/brand/ball.webp" alt="" className="lv-splash-ball" />
       </div>
     </div>
   )

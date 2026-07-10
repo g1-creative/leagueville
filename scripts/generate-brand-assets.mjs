@@ -48,8 +48,10 @@ const jobs = [
   { out: 'src/app/icon.png', kind: 'crop', crop: MARK, size: 64, pad: 0.08 },
   // Site art: header/footer lockup mark, splash-intro logo + ball.
   { out: 'public/brand/mark.png', kind: 'crop', crop: MARK, size: 256, pad: 0 },
-  { out: 'public/brand/ball.png', kind: 'crop', crop: BALL, size: 160, pad: 0 },
-  { out: 'public/brand/logo-full.png', kind: 'full', size: 640 },
+  // Splash-intro art: WebP, not PNG — this pair loads on cold cache in the
+  // 1.6s splash window, and the unoptimized canvas PNG ran ~515KB.
+  { out: 'public/brand/ball.webp', kind: 'crop', crop: BALL, size: 160, pad: 0, format: 'image/webp', quality: 0.92 },
+  { out: 'public/brand/logo-full.webp', kind: 'full', size: 640, format: 'image/webp', quality: 0.92 },
   // iOS launch screens: full logo (mark + wordmark) at 55% width, centered.
   ...SPLASH_SIZES.map(([w, h]) => ({ out: `public/splash/splash-${w}x${h}.png`, kind: 'splash', w, h })),
 ]
@@ -98,7 +100,7 @@ const { background, images } = await page.evaluate(
         const w = Math.round(job.w * 0.55) // logo is square, so height === width
         ctx.drawImage(img, 0, 0, img.width, img.height, Math.round((job.w - w) / 2), Math.round((job.h - w) / 2), w, w)
       }
-      return canvas.toDataURL('image/png')
+      return canvas.toDataURL(job.format ?? 'image/png', job.quality)
     })
 
     return { background, images }
