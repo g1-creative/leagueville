@@ -59,4 +59,10 @@ describe('BottomNav', () => {
     render(<BottomNav />)
     expect(screen.getByText('Leagues').closest('button')?.className).toContain('text-chalk')
   })
+
+  it('marks Leagues active on /cups', () => {
+    nav.pathname = '/cups'
+    render(<BottomNav />)
+    expect(screen.getByText('Leagues').closest('button')?.className).toContain('text-chalk')
+  })
 })

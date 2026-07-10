@@ -8,14 +8,15 @@ describe('LeagueSheet', () => {
     expect(container.innerHTML).toBe('')
   })
 
-  it('lists the five leagues as links that close the sheet on tap', () => {
+  it('lists the five leagues plus Cups as links that close the sheet on tap', () => {
     const onClose = vi.fn()
     render(<LeagueSheet open onClose={onClose} />)
     const links = screen.getAllByRole('link')
-    expect(links).toHaveLength(5)
+    expect(links).toHaveLength(6)
     expect(screen.getByText('Premier League').closest('a')?.getAttribute('href')).toBe('/premier-league')
     expect(screen.getByText('MLS').closest('a')?.getAttribute('href')).toBe('/mls')
     expect(screen.getAllByText('MLS')).toHaveLength(1)
+    expect(screen.getByText('Cups').closest('a')?.getAttribute('href')).toBe('/cups')
     fireEvent.click(screen.getByText('La Liga'))
     expect(onClose).toHaveBeenCalledOnce()
   })

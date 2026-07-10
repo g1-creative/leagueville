@@ -68,6 +68,14 @@ export function LeagueSheet({
               {l.shortName !== l.name && <span className="eyebrow ml-auto">{l.shortName}</span>}
             </Link>
           ))}
+          <Link
+            href="/cups"
+            onClick={onClose}
+            className="flex min-h-12 items-center gap-3 border-b border-rule/60 px-4 text-sm font-semibold last:border-b-0 active:bg-board-hi"
+          >
+            <span aria-hidden className="size-2 shrink-0 rounded-full bg-chalk" />
+            Cups
+          </Link>
         </nav>
       </div>
     </div>
