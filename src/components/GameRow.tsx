@@ -25,7 +25,7 @@ export function GameRow({ fixture }: { fixture: Fixture }) {
             style={{ backgroundColor: competition.accent }}
           />
         )}
-        <span className="num w-14 shrink-0 text-[11px] leading-none text-dim">
+        <span className="num w-14 shrink-0 text-xs leading-none text-dim sm:text-[11px]">
           {fixture.status === 'postponed' ? (
             <span className="line-through decoration-1">PPD</span>
           ) : showScore ? (
@@ -41,7 +41,7 @@ export function GameRow({ fixture }: { fixture: Fixture }) {
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <span className="flex items-center gap-1.5">
             <TeamLogo src={fixture.home.logo} alt={fixture.home.name} size={16} />
-            <span className="truncate text-xs font-medium">{fixture.home.name}</span>
+            <span className="truncate text-[13px] font-medium sm:text-xs">{fixture.home.name}</span>
           </span>
           <span className="flex items-center gap-1.5">
             <TeamLogo src={fixture.away.logo} alt={fixture.away.name} size={16} />

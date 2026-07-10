@@ -65,6 +65,9 @@ body {
   .board-row:hover {
     background-color: var(--color-board-hi);
   }
+  .board-row:active {
+    background-color: var(--color-board-hi);
+  }
 
   /* The signature: a live score flips to a chalk flap. */
   .score-live {
@@ -107,6 +110,10 @@ body {
     border-color: color-mix(in srgb, var(--color-chalk) 45%, transparent);
     background-color: var(--color-board-hi);
   }
+  .btn:active {
+    border-color: color-mix(in srgb, var(--color-chalk) 45%, transparent);
+    background-color: var(--color-board-hi);
+  }
 
   .btn-primary {
     border-radius: 3px;
@@ -121,6 +128,9 @@ body {
   .btn-primary:hover {
     background-color: #ffffff;
   }
+  .btn-primary:active {
+    background-color: #ffffff;
+  }
 
   .btn-muted {
     padding: 0.4rem 0.5rem;
@@ -130,6 +140,43 @@ body {
   }
   .btn-muted:hover {
     color: var(--color-chalk);
+  }
+  .btn-muted:active {
+    color: var(--color-chalk);
+  }
+}
+
+/* Touch polish. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+a,
+button,
+select,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+/* ≥44px effective targets while the mobile chrome is showing (< md). */
+@media (width < 48rem) {
+  .btn,
+  .btn-primary,
+  .btn-muted {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+}
+
+/* Type bump for interactive/reading text below sm (11px → 12px). Pure
+   labels (.eyebrow) intentionally stay at 9px. */
+@media (width < 40rem) {
+  .btn,
+  .btn-primary,
+  .btn-muted {
+    font-size: 12px;
   }
 }
 

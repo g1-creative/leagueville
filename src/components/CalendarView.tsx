@@ -165,7 +165,7 @@ export function CalendarView({
               key={v.key}
               href={href({ view: v.key })}
               aria-current={v.key === view ? 'page' : undefined}
-              className={`-mb-px border-b-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+              className={`-mb-px inline-flex min-h-11 items-center border-b-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors md:min-h-0 ${
                 v.key === view ? 'border-chalk text-chalk' : 'border-transparent text-dim hover:text-chalk'
               }`}
             >
@@ -179,7 +179,7 @@ export function CalendarView({
         {LEAGUES.map((l) => {
           const on = leagues.includes(l.slug)
           const isOnlySelected = on && leagues.length === 1
-          const chipClassName = `num rounded-[2px] border px-2 py-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${
+          const chipClassName = `num rounded-[2px] border px-2.5 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors md:px-2 md:py-1 md:text-[9px] ${
             teamFilter ? 'pointer-events-none opacity-30' : ''
           } ${on ? '' : 'border-rule text-dim hover:text-chalk'}`
           const chipStyle =
@@ -215,7 +215,7 @@ export function CalendarView({
           <Link
             href={href({ myteam: !myteam })}
             aria-pressed={myteam}
-            className={`num rounded-[2px] border px-2 py-1 text-[9px] font-bold uppercase tracking-wider transition-colors ${
+            className={`num rounded-[2px] border px-2.5 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors md:px-2 md:py-1 md:text-[9px] ${
               myteam ? 'border-chalk bg-chalk text-pitch' : 'border-rule text-dim hover:text-chalk'
             }`}
           >

@@ -79,7 +79,7 @@ export default async function LeaguePage({
             key={t.key}
             href={`/${league.slug}?tab=${t.key}`}
             aria-current={tab === t.key ? 'page' : undefined}
-            className={`-mb-px border-b-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+            className={`-mb-px inline-flex min-h-11 items-center border-b-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors md:min-h-0 ${
               tab === t.key ? 'text-chalk' : 'border-transparent text-dim hover:text-chalk'
             }`}
             style={tab === t.key ? { borderBottomColor: league.accent } : undefined}
