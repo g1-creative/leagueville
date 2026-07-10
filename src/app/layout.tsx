@@ -6,6 +6,7 @@ import { BottomNav } from '@/components/BottomNav'
 import { LeagueNav } from '@/components/LeagueNav'
 import { MyTeamLink } from '@/components/MyTeam'
 import { SelectionTray } from '@/components/SelectionTray'
+import { SplashIntro } from '@/components/SplashIntro'
 import { TimezoneProvider } from '@/components/TimezoneProvider'
 import { TimezoneSelect } from '@/components/TimezoneSelect'
 import './globals.css'
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${archivo.variable} ${martian.variable}`}>
       <body className="bg-pitch text-chalk antialiased">
         <TimezoneProvider>
+          <SplashIntro />
           <header className="sticky top-0 z-40 border-b border-rule bg-pitch/90 backdrop-blur">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
               <Link href="/" className="flex items-center gap-2">
