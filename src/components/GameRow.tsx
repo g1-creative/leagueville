@@ -45,7 +45,7 @@ export function GameRow({ fixture }: { fixture: Fixture }) {
           </span>
           <span className="flex items-center gap-1.5">
             <TeamLogo src={fixture.away.logo} alt={fixture.away.name} size={16} />
-            <span className="truncate text-xs font-medium">{fixture.away.name}</span>
+            <span className="truncate text-[13px] font-medium sm:text-xs">{fixture.away.name}</span>
           </span>
         </span>
       </Link>
