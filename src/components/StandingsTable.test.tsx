@@ -29,4 +29,21 @@ describe('StandingsTable', () => {
     expect(screen.getByText('Arsenal')).toBeDefined()
     expect(screen.getByText('Arsenal').closest('a')).toBeNull()
   })
+
+  it('hides W/D/L and GF/GA below sm, keeping Pos, team, P, GD, Pts', () => {
+    render(<StandingsTable group={group} leagueSlug="premier-league" />)
+    for (const h of ['W', 'D', 'L', 'GF', 'GA']) {
+      expect(screen.getByText(h).className).toContain('hidden sm:table-cell')
+    }
+    for (const h of ['Pos', 'P', 'GD', 'Pts']) {
+      expect(screen.getByText(h).className).not.toContain('hidden')
+    }
+  })
+
+  it('only forces the 560px table width from sm up', () => {
+    const { container } = render(<StandingsTable group={group} leagueSlug="premier-league" />)
+    const table = container.querySelector('table')
+    expect(table?.className).toContain('sm:min-w-[560px]')
+    expect(table?.className).not.toContain(' min-w-[560px]')
+  })
 })
