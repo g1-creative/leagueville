@@ -34,7 +34,7 @@ export function FixtureCard({
           {competition.shortName}
         </span>
       )}
-      <div className="flex flex-1 items-center justify-end gap-2.5 text-right">
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5 text-right">
         <span className="truncate text-sm font-medium">{fixture.home.name}</span>
         <TeamLogo src={fixture.home.logo} alt={fixture.home.name} size={28} />
       </div>
@@ -59,7 +59,7 @@ export function FixtureCard({
           <div className="num text-[13px] font-medium leading-tight">{formatKickoff(fixture.kickoff, tz)}</div>
         )}
       </div>
-      <div className="flex flex-1 items-center gap-2.5">
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <TeamLogo src={fixture.away.logo} alt={fixture.away.name} size={28} />
         <span className="truncate text-sm font-medium">{fixture.away.name}</span>
       </div>

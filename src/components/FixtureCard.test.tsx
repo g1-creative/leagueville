@@ -52,4 +52,20 @@ describe('FixtureCard', () => {
     render(<FixtureCard fixture={{ ...base, competition: 'fa-cup' }} showLeague />)
     expect(screen.getByText('FA Cup')).toBeDefined()
   })
+
+  it('lets long team names truncate instead of overflowing the row', () => {
+    const fixture: Fixture = {
+      ...base,
+      home: { id: 'h', name: 'Borussia Mönchengladbach Development Squad' },
+      away: { id: 'a', name: 'Wolverhampton Wanderers Reserves and Academy' },
+    }
+    const { container } = render(<FixtureCard fixture={fixture} pickable />)
+    const halves = container.querySelectorAll('div.flex-1')
+    expect(halves.length).toBe(2)
+    for (const el of halves) {
+      // Without min-w-0 a flex child refuses to shrink below its content,
+      // so truncate cannot engage and .board's overflow:hidden clips names.
+      expect(el.className).toContain('min-w-0')
+    }
+  })
 })
