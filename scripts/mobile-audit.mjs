@@ -34,20 +34,34 @@ const ROUTES = [
 ]
 
 const failures = []
+let totalBoardRows = 0
 
 async function audit(page, route) {
   await page.goto(BASE + route, { waitUntil: 'networkidle' })
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
   if (overflow > 0) failures.push(`${route}: horizontal overflow of ${overflow}px`)
-  const clipped = await page.evaluate(() =>
-    [...document.querySelectorAll('.board-row')]
-      .filter((row) => row.scrollWidth > row.clientWidth + 1)
-      .map((row) => (row.textContent ?? '').trim().slice(0, 60)),
-  )
+  const { clipped, boardRowCount } = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('.board-row')]
+    return {
+      boardRowCount: rows.length,
+      clipped: rows
+        .filter((row) => row.scrollWidth > row.clientWidth + 1)
+        .map((row) => (row.textContent ?? '').trim().slice(0, 60)),
+    }
+  })
+  totalBoardRows += boardRowCount
   for (const c of clipped) failures.push(`${route}: clipped fixture row "${c}"`)
   const name = route === '/' ? 'home' : route.replace(/[/?=]+/g, '-').replace(/^-|-$/g, '')
   await page.screenshot({ path: path.join(OUT, `${name}.png`), fullPage: true })
   console.log(`audited ${route} (overflow ${overflow}px, ${clipped.length} clipped rows)`)
+}
+
+async function safeAudit(page, route) {
+  try {
+    await audit(page, route)
+  } catch (err) {
+    failures.push(`${route}: crashed — ${err.message}`)
+  }
 }
 
 const browser = await chromium.launch()
@@ -57,7 +71,7 @@ await context.addInitScript(() => sessionStorage.setItem('lv-splash', '1'))
 const page = await context.newPage()
 await mkdir(OUT, { recursive: true })
 
-for (const route of ROUTES) await audit(page, route)
+for (const route of ROUTES) await safeAudit(page, route)
 
 // A real team page and a real game page, discovered live.
 await page.goto(`${BASE}/premier-league?tab=teams`, { waitUntil: 'networkidle' })
@@ -66,15 +80,28 @@ const teamHref = await page.evaluate(() => {
   return links.map((a) => a.getAttribute('href')).find((h) => h && !h.includes('?') && !h.includes('/game/')) ?? null
 })
 if (teamHref) {
-  await audit(page, teamHref)
+  await safeAudit(page, teamHref)
   const gameHref = await page.evaluate(
     () => document.querySelector('main a[href*="/game/"]')?.getAttribute('href') ?? null,
   )
-  if (gameHref) await audit(page, gameHref)
+  if (gameHref) await safeAudit(page, gameHref)
   else console.log('note: no game link on the team page (off-season?) — skipping game route')
 } else {
   failures.push('no team link found on /premier-league?tab=teams')
 }
+
+// A real cup, discovered live from the cups index.
+await page.goto(`${BASE}/cups`, { waitUntil: 'networkidle' })
+const cupHref = await page.evaluate(
+  () => document.querySelector('main a[href^="/cups/"]')?.getAttribute('href') ?? null,
+)
+if (cupHref) {
+  await safeAudit(page, cupHref)
+} else {
+  failures.push('no cup link found on /cups')
+}
+
+if (totalBoardRows === 0) failures.push('no .board-row rows found anywhere — selector drift?')
 
 // Tap-target sweep of the new chrome.
 await page.goto(BASE + '/', { waitUntil: 'networkidle' })
