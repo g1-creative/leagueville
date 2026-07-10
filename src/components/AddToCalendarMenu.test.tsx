@@ -5,7 +5,7 @@ import { AddToCalendarMenu } from './AddToCalendarMenu'
 
 const base: Fixture = {
   id: '77',
-  league: 'premier-league',
+  competition: 'premier-league',
   kickoff: '2026-08-22T14:00:00.000Z',
   status: 'scheduled',
   statusDetail: '',

@@ -1,3 +1,4 @@
+import { getCompetition } from './leagues'
 import type { Fixture } from './types'
 
 export interface CalEvent {
@@ -70,18 +71,21 @@ export function googleCalendarUrl(e: CalEvent): string {
   return `https://calendar.google.com/calendar/render?${params}`
 }
 
-export function fixturesToCalEvents(fixtures: Fixture[], leagueName: string): CalEvent[] {
+export function fixturesToCalEvents(fixtures: Fixture[]): CalEvent[] {
   return fixtures
     .filter((f) => f.status !== 'postponed')
-    .map((f) => ({
-      uid: `${f.league}-${f.id}@leagueville`,
-      start: new Date(f.kickoff),
-      title: `⚽ ${f.home.name} vs ${f.away.name}`,
-      location: f.venue,
-      description:
-        leagueName +
-        (f.status === 'final' && f.home.score !== undefined && f.away.score !== undefined
-          ? ` — FT ${f.home.score}–${f.away.score}`
-          : ''),
-    }))
+    .map((f) => {
+      const name = getCompetition(f.competition)?.name ?? f.competition
+      return {
+        uid: `${f.competition}-${f.id}@leagueville`,
+        start: new Date(f.kickoff),
+        title: `⚽ ${f.home.name} vs ${f.away.name}`,
+        location: f.venue,
+        description:
+          name +
+          (f.status === 'final' && f.home.score !== undefined && f.away.score !== undefined
+            ? ` — FT ${f.home.score}–${f.away.score}`
+            : ''),
+      }
+    })
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { monthGridKeys, monthOf } from '@/lib/calendar'
-import { getLeague } from '@/lib/leagues'
+import { getCompetition } from '@/lib/leagues'
 import { dateKey, formatKickoff } from '@/lib/time'
 import type { Fixture } from '@/lib/types'
 import { useTz } from './TimezoneProvider'
@@ -60,7 +60,7 @@ export function MonthGrid({
           const games = byDay.get(key) ?? []
           const outside = monthOf(key) !== month
           const isToday = key === todayKey
-          const leagues = [...new Set(games.map((g) => g.league))]
+          const leagues = [...new Set(games.map((g) => g.competition))]
           return (
             <button
               key={key}
@@ -90,7 +90,7 @@ export function MonthGrid({
                       key={slug}
                       aria-hidden
                       className="size-1.5 rounded-full"
-                      style={{ backgroundColor: getLeague(slug)?.accent }}
+                      style={{ backgroundColor: getCompetition(slug)?.accent }}
                     />
                   ))}
                   <span className="num ml-0.5 text-[10px] text-dim">{games.length}</span>
@@ -100,11 +100,11 @@ export function MonthGrid({
               {/* Desktop: up to three chips */}
               <div className="mt-1 hidden flex-col gap-1 sm:flex">
                 {games.slice(0, MAX_CHIPS).map((g) => (
-                  <span key={`${g.league}:${g.id}`} className="flex items-center gap-1 truncate text-[10px]">
+                  <span key={`${g.competition}:${g.id}`} className="flex items-center gap-1 truncate text-[10px]">
                     <span
                       aria-hidden
                       className="size-1.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: getLeague(g.league)?.accent }}
+                      style={{ backgroundColor: getCompetition(g.competition)?.accent }}
                     />
                     <span className="num truncate font-medium text-chalk">{abbrev(g.home.name)}</span>
                     <span className="text-dim">–</span>

@@ -48,9 +48,11 @@ function readPinned(): PinnedTeam | null {
   }
 }
 
+// PinnedTeam.league is a persisted localStorage key (lv-myteam) and keeps its
+// name; only the Fixture field was renamed to `competition`.
 function involves(f: Fixture, team: PinnedTeam): boolean {
   return (
-    f.league === team.league &&
+    f.competition === team.league &&
     (slugify(f.home.name) === team.slug || slugify(f.away.name) === team.slug)
   )
 }
@@ -107,7 +109,7 @@ export function CalendarView({
     () =>
       teamFilter
         ? fixtures.filter((f) => involves(f, teamFilter))
-        : fixtures.filter((f) => leagues.includes(f.league)),
+        : fixtures.filter((f) => (leagues as readonly string[]).includes(f.competition)),
     [fixtures, leagues, teamFilter],
   )
 

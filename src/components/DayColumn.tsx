@@ -20,7 +20,7 @@ export function DayColumn({
       ) : (
         <div className="board">
           {fixtures.map((f) => (
-            <GameRow key={`${f.league}:${f.id}`} fixture={f} />
+            <GameRow key={`${f.competition}:${f.id}`} fixture={f} />
           ))}
         </div>
       )}

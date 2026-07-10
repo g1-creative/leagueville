@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { normalizeBios } from './bio'
+import { describe, it, expect, vi } from 'vitest'
+import { getCup } from '../leagues'
+import { getTeamBio, normalizeBios } from './bio'
 
 describe('normalizeBios', () => {
   it('keys bios by ESPN id and cleans nulls', () => {
@@ -28,5 +29,15 @@ describe('normalizeBios', () => {
 
   it('handles a null teams payload', () => {
     expect(normalizeBios({ teams: null }).size).toBe(0)
+  })
+})
+
+describe('getTeamBio', () => {
+  it('returns undefined without fetching when the competition has no tsdbName', async () => {
+    const fetchSpy = vi.fn()
+    vi.stubGlobal('fetch', fetchSpy)
+    expect(await getTeamBio(getCup('fa-cup')!, '359')).toBeUndefined()
+    expect(fetchSpy).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
   })
 })

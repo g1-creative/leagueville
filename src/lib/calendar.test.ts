@@ -158,7 +158,7 @@ describe('monthOf', () => {
 
 const fixture = (id: string, kickoff: string): Fixture => ({
   id,
-  league: 'premier-league',
+  competition: 'premier-league',
   kickoff,
   status: 'scheduled',
   statusDetail: '',

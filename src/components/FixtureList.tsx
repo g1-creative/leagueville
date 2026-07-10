@@ -42,7 +42,7 @@ export function FixtureList({
           </div>
           <div className="board">
             {g.items.map((f) => (
-              <FixtureCard key={`${f.league}:${f.id}`} fixture={f} pickable={pickable} showLeague={showLeague} />
+              <FixtureCard key={`${f.competition}:${f.id}`} fixture={f} pickable={pickable} showLeague={showLeague} />
             ))}
           </div>
         </section>

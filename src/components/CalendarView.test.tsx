@@ -12,12 +12,12 @@ import { CalendarView } from './CalendarView'
 const ALL = ['premier-league', 'la-liga', 'ligue-1', 'brasileirao', 'mls']
 
 const epl: Fixture = {
-  id: '1', league: 'premier-league', kickoff: '2026-07-15T14:00:00.000Z',
+  id: '1', competition: 'premier-league', kickoff: '2026-07-15T14:00:00.000Z',
   status: 'scheduled', statusDetail: '',
   home: { id: 'h', name: 'Liverpool' }, away: { id: 'a', name: 'Everton' },
 }
 const mls: Fixture = {
-  id: '2', league: 'mls', kickoff: '2026-07-15T23:00:00.000Z',
+  id: '2', competition: 'mls', kickoff: '2026-07-15T23:00:00.000Z',
   status: 'scheduled', statusDetail: '',
   home: { id: 'h2', name: 'LA Galaxy' }, away: { id: 'a2', name: 'Inter Miami' },
 }

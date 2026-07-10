@@ -1,6 +1,6 @@
 'use client'
 
-import { getLeague } from '@/lib/leagues'
+import { getCompetition } from '@/lib/leagues'
 import { formatKickoff } from '@/lib/time'
 import type { Fixture } from '@/lib/types'
 import { TeamLogo } from './TeamLogo'
@@ -18,20 +18,20 @@ export function FixtureCard({
 }) {
   const { tz } = useTz()
   const { picks, toggle } = usePicks()
-  const token = `${fixture.league}:${fixture.id}`
+  const token = `${fixture.competition}:${fixture.id}`
   const picked = picks.includes(token)
-  const league = getLeague(fixture.league)
+  const competition = getCompetition(fixture.competition)
   const live = fixture.status === 'live'
   const showScore = live || fixture.status === 'final'
 
   return (
     <div className="board-row flex items-center gap-3 px-3 py-3 sm:px-4">
-      {showLeague && league && (
+      {showLeague && competition && (
         <span
           className="num shrink-0 rounded-[2px] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-          style={{ backgroundColor: `${league.accent}26`, color: league.accent }}
+          style={{ backgroundColor: `${competition.accent}26`, color: competition.accent }}
         >
-          {league.shortName}
+          {competition.shortName}
         </span>
       )}
       <div className="flex flex-1 items-center justify-end gap-2.5 text-right">

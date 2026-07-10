@@ -7,7 +7,7 @@ import { TimezoneProvider } from './TimezoneProvider'
 
 const fx = (id: string, kickoff: string, home = 'Liverpool', away = 'Everton'): Fixture => ({
   id,
-  league: 'premier-league',
+  competition: 'premier-league',
   kickoff,
   status: 'scheduled',
   statusDetail: '',

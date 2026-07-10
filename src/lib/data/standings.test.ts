@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { normalizeEntry } from './standings'
+import { describe, it, expect, vi } from 'vitest'
+
+vi.mock('./espn', () => ({
+  espnJson: vi.fn(async () => ({ children: [] })),
+}))
+
+import { getCup } from '../leagues'
+import { getStandings, normalizeEntry } from './standings'
 
 describe('normalizeEntry', () => {
   it('maps ESPN stats array to a standings row', () => {
@@ -39,5 +45,11 @@ describe('normalizeEntry', () => {
     expect(row.points).toBe(0)
     expect(row.rank).toBe(0)
     expect(row.logo).toBeUndefined()
+  })
+})
+
+describe('getStandings', () => {
+  it('returns no groups for a knockout-only cup (ESPN sends children: [])', async () => {
+    expect(await getStandings(getCup('fa-cup')!)).toEqual([])
   })
 })

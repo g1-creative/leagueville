@@ -26,6 +26,7 @@ export function normalizeBios(raw: { teams?: RawTsdbTeam[] | null }): Map<string
 }
 
 export async function getTeamBio(league: League, espnTeamId: string): Promise<TeamBio | undefined> {
+  if (!league.tsdbName) return undefined // cups have no TheSportsDB entry
   try {
     const res = await fetch(
       `${TSDB}/search_all_teams.php?l=${encodeURIComponent(league.tsdbName)}`,

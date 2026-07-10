@@ -9,7 +9,9 @@ export const metadata: Metadata = {
   description: 'Every Premier League, La Liga, Ligue 1, Brasileirão and MLS game on one calendar.',
 }
 
-const ALL_SLUGS: readonly LeagueSlug[] = LEAGUES.map((l) => l.slug)
+// LEAGUES is Competition[] now that cups share the registry; its entries are all
+// kind: 'league', so their slugs are LeagueSlug. The calendar stays league-only.
+const ALL_SLUGS: readonly LeagueSlug[] = LEAGUES.map((l) => l.slug as LeagueSlug)
 
 function isLeagueSlug(s: string): s is LeagueSlug {
   return (ALL_SLUGS as readonly string[]).includes(s)

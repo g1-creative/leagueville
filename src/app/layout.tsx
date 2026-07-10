@@ -14,7 +14,7 @@ const martian = Martian_Mono({ variable: '--font-martian', subsets: ['latin'], w
 export const metadata: Metadata = {
   title: 'Leagueville — Soccer fixtures & calendars',
   description:
-    'Fixtures, results, standings and squads for the Premier League, La Liga, Ligue 1, Brasileirão and MLS — with one-click calendar subscriptions.',
+    'Fixtures, results, standings and squads for the Premier League, La Liga, Ligue 1, Brasileirão and MLS — plus eleven cup competitions — with one-click calendar subscriptions.',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

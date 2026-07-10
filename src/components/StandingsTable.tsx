@@ -10,7 +10,7 @@ export function StandingsTable({
   showName = false,
 }: {
   group: StandingsGroup
-  leagueSlug: string
+  leagueSlug?: string
   showName?: boolean
 }) {
   return (
@@ -43,10 +43,18 @@ export function StandingsTable({
                 <tr key={r.teamId} className="board-row">
                   <td className="num px-3 py-2.5 text-[11px] text-dim">{r.rank}</td>
                   <td className="px-3 py-2.5">
-                    <Link href={`/${leagueSlug}/${r.teamSlug}`} className="flex items-center gap-2.5 hover:underline">
-                      <TeamLogo src={r.logo} alt={r.teamName} size={20} />
-                      <span className="font-medium">{r.teamName}</span>
-                    </Link>
+                    {/* Cup standings have no team pages — render unlinked rather than emit a dead href. */}
+                    {leagueSlug ? (
+                      <Link href={`/${leagueSlug}/${r.teamSlug}`} className="flex items-center gap-2.5 hover:underline">
+                        <TeamLogo src={r.logo} alt={r.teamName} size={20} />
+                        <span className="font-medium">{r.teamName}</span>
+                      </Link>
+                    ) : (
+                      <span className="flex items-center gap-2.5">
+                        <TeamLogo src={r.logo} alt={r.teamName} size={20} />
+                        <span className="font-medium">{r.teamName}</span>
+                      </span>
+                    )}
                   </td>
                   <td className={STAT}>{r.played}</td>
                   <td className={STAT}>{r.wins}</td>

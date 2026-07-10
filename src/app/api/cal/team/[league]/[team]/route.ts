@@ -1,5 +1,5 @@
 import { getLeague } from '@/lib/leagues'
-import { getSeasonFixtures } from '@/lib/data/fixtures'
+import { getTeamFixtures } from '@/lib/data/teamFixtures'
 import { findTeam } from '@/lib/data/teams'
 import { buildIcs, fixturesToCalEvents } from '@/lib/ics'
 
@@ -13,10 +13,8 @@ export async function GET(
   try {
     const team = await findTeam(league, rawTeam.replace(/\.ics$/, ''))
     if (!team) return new Response('Unknown team', { status: 404 })
-    const fixtures = (await getSeasonFixtures(league)).filter(
-      (f) => f.home.id === team.id || f.away.id === team.id,
-    )
-    const ics = buildIcs(`${team.name} — Leagueville`, fixturesToCalEvents(fixtures, league.name))
+    const fixtures = await getTeamFixtures(league, team.id)
+    const ics = buildIcs(`${team.name} — Leagueville`, fixturesToCalEvents(fixtures))
     return new Response(ics, {
       headers: {
         'Content-Type': 'text/calendar; charset=utf-8',

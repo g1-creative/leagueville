@@ -11,7 +11,7 @@ import { FixtureCard } from './FixtureCard'
 
 const base: Fixture = {
   id: '1',
-  league: 'premier-league',
+  competition: 'premier-league',
   kickoff: '2026-08-22T14:00:00.000Z',
   status: 'scheduled',
   statusDetail: '',
@@ -46,5 +46,10 @@ describe('FixtureCard', () => {
   it('shows a pick toggle only when pickable and scheduled', () => {
     render(<FixtureCard fixture={base} pickable />)
     expect(screen.getByRole('button', { name: /cal/i })).toBeDefined()
+  })
+
+  it('shows a competition badge for cup fixtures when showLeague is set', () => {
+    render(<FixtureCard fixture={{ ...base, competition: 'fa-cup' }} showLeague />)
+    expect(screen.getByText('FA Cup')).toBeDefined()
   })
 })

@@ -1,4 +1,4 @@
-import type { LeagueSlug } from './leagues'
+import type { CompetitionSlug } from './leagues'
 
 export interface FixtureSide {
   id: string
@@ -11,10 +11,11 @@ export interface FixtureSide {
 
 export interface Fixture {
   id: string
-  league: LeagueSlug
+  competition: CompetitionSlug
   kickoff: string // ISO 8601 UTC
   status: 'scheduled' | 'live' | 'final' | 'postponed'
   statusDetail: string
+  round?: string // cup round from ESPN's event.season.slug, e.g. 'round-of-16'; leagues leave it undefined
   venue?: string
   home: FixtureSide
   away: FixtureSide
