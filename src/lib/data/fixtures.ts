@@ -82,11 +82,17 @@ async function fetchSeasonFixtures(league: League, start: string, end: string): 
   return normalizeAll(data.events, league)
 }
 
+// Bump SCHEMA when the shape of a cached Fixture changes. The data cache
+// survives deployments, so without this a new build reads old-shaped objects
+// until the TTL expires — v2 renamed Fixture.league to Fixture.competition,
+// which surfaced as `DESCRIPTION:undefined` in live calendar subscriptions.
+const SCHEMA = 'v2'
+
 export async function getSeasonFixtures(league: League): Promise<Fixture[]> {
   const { start, end } = seasonRange(league, new Date())
   return unstable_cache(
     () => fetchSeasonFixtures(league, start, end),
-    ['season-fixtures', league.slug, `${start}-${end}`],
+    ['season-fixtures', SCHEMA, league.slug, `${start}-${end}`],
     { revalidate: 21600 },
   )()
 }
