@@ -19,7 +19,8 @@ function read(): MyTeam | null {
   }
 }
 
-export function MyTeamLink() {
+/** The pinned team, kept live across tabs of this page via the lv-myteam event. */
+export function useMyTeam(): MyTeam | null {
   const [team, setTeam] = useState<MyTeam | null>(null)
   useEffect(() => {
     setTeam(read())
@@ -27,6 +28,11 @@ export function MyTeamLink() {
     window.addEventListener('lv-myteam', onChange)
     return () => window.removeEventListener('lv-myteam', onChange)
   }, [])
+  return team
+}
+
+export function MyTeamLink() {
+  const team = useMyTeam()
   if (!team) return null
   return (
     <Link
