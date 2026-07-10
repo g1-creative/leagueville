@@ -7,17 +7,18 @@ import { LEAGUES } from '@/lib/leagues'
 export function LeagueNav() {
   const pathname = usePathname()
   return (
-    <nav className="flex gap-1 overflow-x-auto">
+    <nav className="-mb-px flex gap-4 overflow-x-auto">
       {LEAGUES.map((l) => {
         const active = pathname === `/${l.slug}` || pathname.startsWith(`/${l.slug}/`)
         return (
           <Link
             key={l.slug}
             href={`/${l.slug}`}
-            className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium ${
-              active ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+            aria-current={active ? 'page' : undefined}
+            className={`whitespace-nowrap border-b-2 py-1 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+              active ? 'text-chalk' : 'border-transparent text-dim hover:text-chalk'
             }`}
-            style={active ? { backgroundColor: `${l.accent}33`, boxShadow: `inset 0 -2px 0 ${l.accent}` } : undefined}
+            style={active ? { borderBottomColor: l.accent } : undefined}
           >
             {l.shortName}
           </Link>

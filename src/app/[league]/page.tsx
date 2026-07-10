@@ -56,7 +56,9 @@ export default async function LeaguePage({
           ))}
         </div>
       ) : (
-        <p className="py-12 text-center text-slate-400">Standings unavailable right now.</p>
+        <div className="board px-6 py-14 text-center">
+          <p className="text-sm text-dim">Standings unavailable right now.</p>
+        </div>
       )
   } else {
     const teams = await getTeams(league).catch(() => [])
@@ -64,22 +66,23 @@ export default async function LeaguePage({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-3">
-        <h1 className="text-3xl font-black" style={{ borderLeft: `4px solid ${league.accent}`, paddingLeft: 12 }}>
+    <div className="space-y-7">
+      <div className="space-y-4">
+        <h1 className="display text-3xl leading-none" style={{ borderLeft: `3px solid ${league.accent}`, paddingLeft: 14 }}>
           {league.name}
         </h1>
         <CalendarButtons path={`/api/cal/league/${league.slug}.ics`} label="League calendar" />
       </div>
-      <div className="flex gap-1 border-b border-slate-800">
+      <div className="flex gap-5 border-b border-rule">
         {TABS.map((t) => (
           <Link
             key={t.key}
             href={`/${league.slug}?tab=${t.key}`}
-            className={`rounded-t-lg px-4 py-2 text-sm font-medium ${
-              tab === t.key ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-200'
+            aria-current={tab === t.key ? 'page' : undefined}
+            className={`-mb-px border-b-2 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+              tab === t.key ? 'text-chalk' : 'border-transparent text-dim hover:text-chalk'
             }`}
-            style={tab === t.key ? { boxShadow: `inset 0 2px 0 ${league.accent}` } : undefined}
+            style={tab === t.key ? { borderBottomColor: league.accent } : undefined}
           >
             {t.label}
           </Link>

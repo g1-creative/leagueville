@@ -11,7 +11,7 @@ export function TimezoneSelect() {
       value={tz}
       onChange={(e) => setTz(e.target.value)}
       aria-label="Timezone"
-      className="max-w-40 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-300"
+      className="max-w-40 rounded-[3px] border border-rule bg-board px-2 py-1.5 text-[11px] text-dim transition-colors hover:text-chalk"
     >
       {!zones.includes(tz) && <option value={tz}>{tz}</option>}
       {zones.map((z) => (

@@ -48,13 +48,13 @@ export default async function TeamPage({
   const bioParagraphs = bio?.description?.split(/\r?\n\r?\n/).filter(Boolean) ?? []
 
   return (
-    <div className="space-y-10">
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-4">
-          <TeamLogo src={team.logo} alt={team.name} size={72} />
-          <div>
-            <h1 className="text-3xl font-black">{team.name}</h1>
-            <p className="text-sm text-slate-400">
+    <div className="space-y-12">
+      <div className="space-y-5">
+        <div className="flex flex-wrap items-center gap-5">
+          <TeamLogo src={team.logo} alt={team.name} size={64} />
+          <div style={{ borderLeft: `3px solid ${league.accent}`, paddingLeft: 14 }}>
+            <h1 className="display text-3xl leading-none">{team.name}</h1>
+            <p className="mt-2 text-[13px] tabular-nums text-dim">
               {[bio?.stadium, bio?.founded ? `Founded ${bio.founded}` : undefined, position]
                 .filter(Boolean)
                 .join(' · ')}
@@ -66,12 +66,14 @@ export default async function TeamPage({
         </div>
         <CalendarButtons path={`/api/cal/team/${league.slug}/${team.slug}.ics`} label={`${team.shortName} calendar`} />
         {bioParagraphs.length > 0 && (
-          <div className="max-w-3xl text-sm leading-relaxed text-slate-300">
+          <div className="max-w-3xl text-sm leading-relaxed text-dim">
             <p>{bioParagraphs[0]}</p>
             {bioParagraphs.length > 1 && (
               <details className="mt-2">
-                <summary className="cursor-pointer text-slate-400 hover:text-slate-200">Read more</summary>
-                <div className="mt-2 space-y-2">
+                <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wider text-dim transition-colors hover:text-chalk">
+                  Read more
+                </summary>
+                <div className="mt-3 space-y-3">
                   {bioParagraphs.slice(1).map((p, i) => (
                     <p key={i}>{p}</p>
                   ))}
@@ -96,13 +98,13 @@ export default async function TeamPage({
 
       {history.length > 0 && (
         <Section title="Season history">
-          <ul className="divide-y divide-slate-800/50 overflow-hidden rounded-xl border border-slate-800 text-sm">
+          <ul className="board text-sm">
             {history.map((h) => (
-              <li key={h.season} className="flex items-center gap-4 px-4 py-2.5">
-                <span className="w-20 font-mono text-slate-400">{seasonLabel(league, h.season)}</span>
+              <li key={h.season} className="board-row flex items-center gap-4 px-4 py-2.5">
+                <span className="num w-24 text-[11px] text-dim">{seasonLabel(league, h.season)}</span>
                 <span className="font-semibold">{ordinal(h.rank)}</span>
-                {h.group && <span className="text-slate-400">{h.group}</span>}
-                <span className="ml-auto text-slate-300">{h.points} pts</span>
+                {h.group && <span className="text-[13px] text-dim">{h.group}</span>}
+                <span className="num ml-auto text-[13px] font-bold">{h.points} pts</span>
               </li>
             ))}
           </ul>

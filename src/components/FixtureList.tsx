@@ -18,7 +18,11 @@ export function FixtureList({
 }) {
   const { tz } = useTz()
   if (fixtures.length === 0) {
-    return <p className="py-12 text-center text-slate-400">{emptyMessage}</p>
+    return (
+      <div className="board px-6 py-14 text-center">
+        <p className="mx-auto max-w-md text-sm text-dim">{emptyMessage}</p>
+      </div>
+    )
   }
   const groups: { key: string; heading: string; items: Fixture[] }[] = []
   for (const f of fixtures) {
@@ -28,11 +32,15 @@ export function FixtureList({
     else groups.push({ key, heading: dateHeading(f.kickoff, tz), items: [f] })
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {groups.map((g) => (
         <section key={g.key}>
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">{g.heading}</h3>
-          <div className="space-y-2">
+          <div className="mb-2.5 flex items-center gap-3">
+            <h3 className="display text-[11px] leading-none">{g.heading}</h3>
+            <span className="h-px flex-1 bg-rule" />
+            <span className="eyebrow">{g.key}</span>
+          </div>
+          <div className="board">
             {g.items.map((f) => (
               <FixtureCard key={`${f.league}:${f.id}`} fixture={f} pickable={pickable} showLeague={showLeague} />
             ))}

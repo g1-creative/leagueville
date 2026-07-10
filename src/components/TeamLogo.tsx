@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 export function TeamLogo({ src, alt, size = 32 }: { src?: string; alt: string; size?: number }) {
   if (!src) {
-    return <div style={{ width: size, height: size }} className="shrink-0 rounded-full bg-slate-800" />
+    return <div style={{ width: size, height: size }} className="shrink-0 rounded-full bg-board-hi" />
   }
   return (
     <Image

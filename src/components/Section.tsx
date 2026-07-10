@@ -1,7 +1,10 @@
 export function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 text-xl font-bold">{title}</h2>
+      <div className="mb-4 flex items-center gap-4">
+        <h2 className="display text-[15px] leading-none">{title}</h2>
+        <span className="h-px flex-1 bg-rule" />
+      </div>
       {children}
     </section>
   )

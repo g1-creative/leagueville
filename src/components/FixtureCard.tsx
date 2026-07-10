@@ -21,53 +21,59 @@ export function FixtureCard({
   const token = `${fixture.league}:${fixture.id}`
   const picked = picks.includes(token)
   const league = getLeague(fixture.league)
-  const showScore = fixture.status === 'live' || fixture.status === 'final'
+  const live = fixture.status === 'live'
+  const showScore = live || fixture.status === 'final'
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3">
+    <div className="board-row flex items-center gap-3 px-3 py-3 sm:px-4">
       {showLeague && league && (
         <span
-          className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold"
-          style={{ backgroundColor: `${league.accent}33`, color: league.accent }}
+          className="num shrink-0 rounded-[2px] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+          style={{ backgroundColor: `${league.accent}26`, color: league.accent }}
         >
           {league.shortName}
         </span>
       )}
-      <div className="flex flex-1 items-center justify-end gap-2 text-right">
+      <div className="flex flex-1 items-center justify-end gap-2.5 text-right">
         <span className="truncate text-sm font-medium">{fixture.home.name}</span>
-        <TeamLogo src={fixture.home.logo} alt={fixture.home.name} />
+        <TeamLogo src={fixture.home.logo} alt={fixture.home.name} size={28} />
       </div>
-      <div className="w-24 shrink-0 text-center">
+      <div className="w-[92px] shrink-0 text-center">
         {showScore ? (
           <>
-            <div className={`text-lg font-bold ${fixture.status === 'live' ? 'text-emerald-400' : ''}`}>
-              {fixture.home.score ?? '-'}–{fixture.away.score ?? '-'}
+            <div className="num text-[17px] font-bold leading-tight">
+              <span className={live ? 'score-live' : undefined}>
+                {fixture.home.score ?? '-'}–{fixture.away.score ?? '-'}
+              </span>
             </div>
-            <div className="text-xs text-slate-400">
-              {fixture.status === 'live' ? `LIVE · ${fixture.statusDetail}` : fixture.statusDetail}
+            <div className="eyebrow mt-1 flex items-center justify-center gap-1.5">
+              {live && <span className="dot-live" aria-hidden />}
+              <span className={live ? 'text-chalk' : undefined}>
+                {live ? `Live · ${fixture.statusDetail}` : fixture.statusDetail}
+              </span>
             </div>
           </>
         ) : fixture.status === 'postponed' ? (
-          <div className="text-xs font-semibold uppercase text-amber-400">Postponed</div>
+          <div className="eyebrow line-through decoration-1">Postponed</div>
         ) : (
-          <div className="text-lg font-semibold">{formatKickoff(fixture.kickoff, tz)}</div>
+          <div className="num text-[13px] font-medium leading-tight">{formatKickoff(fixture.kickoff, tz)}</div>
         )}
       </div>
-      <div className="flex flex-1 items-center gap-2">
-        <TeamLogo src={fixture.away.logo} alt={fixture.away.name} />
+      <div className="flex flex-1 items-center gap-2.5">
+        <TeamLogo src={fixture.away.logo} alt={fixture.away.name} size={28} />
         <span className="truncate text-sm font-medium">{fixture.away.name}</span>
       </div>
       {pickable && fixture.status === 'scheduled' && (
         <button
           onClick={() => toggle(token)}
           aria-pressed={picked}
-          className={`shrink-0 rounded-md border px-2 py-1 text-xs ${
+          className={`shrink-0 rounded-[2px] border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
             picked
-              ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-              : 'border-slate-700 text-slate-400 hover:border-slate-500'
+              ? 'border-chalk bg-chalk text-pitch'
+              : 'border-rule text-dim hover:border-chalk/45 hover:text-chalk'
           }`}
         >
-          {picked ? '✓ Added' : '+ Cal'}
+          {picked ? 'In cal' : '+ Cal'}
         </button>
       )}
     </div>

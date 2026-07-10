@@ -11,12 +11,12 @@ export function CalendarButtons({ path, label }: { path: string; label: string }
   const gcal = `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}`
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs text-slate-400">{label}:</span>
-      <a href={webcal} className="btn">
-        📅 Subscribe (Apple / Outlook)
+      <span className="eyebrow mr-1">{label}</span>
+      <a href={webcal} className="btn-primary">
+        Subscribe in Apple or Outlook
       </a>
       <a href={gcal} target="_blank" rel="noreferrer" className="btn">
-        Google Calendar
+        Subscribe in Google Calendar
       </a>
       <a href={path} download className="btn-muted" title="One-time import — won't update if kickoff times change">
         Download .ics

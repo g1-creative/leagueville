@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
+/* Fonts must be inlined so the utilities emit next/font's var directly. */
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-archivo);
+  --font-display: var(--font-archivo);
+  --font-data: var(--font-martian);
+}
+
+/* Floodlit turf at night. There is no house accent: chalk white is the
+   action colour, and hue is reserved for league identity. */
+@theme {
+  --color-pitch: #0a100e;
+  --color-board: #131a18;
+  --color-board-hi: #1b2422;
+  --color-rule: #22302b;
+  --color-chalk: #ecf1ee;
+  --color-dim: #7e8d87;
 }
 
 body {
@@ -10,10 +23,127 @@ body {
 }
 
 @layer components {
-  .btn {
-    @apply rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-semibold text-slate-100 hover:bg-slate-700;
+  /* Signage: Archivo run wide and heavy, uppercase. Headings only. */
+  .display {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-stretch: 112%;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
   }
+
+  /* The board face. Times, scores, points, dates — never prose. */
+  .num {
+    font-family: var(--font-data), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  .eyebrow {
+    font-family: var(--font-data), ui-monospace, monospace;
+    font-size: 9px;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-dim);
+  }
+
+  .board {
+    border: 1px solid var(--color-rule);
+    border-radius: 3px;
+    background-color: var(--color-board);
+    overflow: hidden;
+  }
+
+  .board-row {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-rule) 60%, transparent);
+    transition: background-color 120ms ease;
+  }
+  .board-row:last-child {
+    border-bottom: 0;
+  }
+  .board-row:hover {
+    background-color: var(--color-board-hi);
+  }
+
+  /* The signature: a live score flips to a chalk flap. */
+  .score-live {
+    display: inline-block;
+    border-radius: 2px;
+    background-color: var(--color-chalk);
+    color: var(--color-pitch);
+    padding: 1px 7px 2px;
+    animation: flap 2.4s ease-in-out infinite;
+  }
+  .dot-live {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--color-chalk);
+    animation: flap 2.4s ease-in-out infinite;
+  }
+  @keyframes flap {
+    0%,
+    70%,
+    100% {
+      opacity: 1;
+    }
+    82% {
+      opacity: 0.4;
+    }
+  }
+
+  .btn {
+    border-radius: 3px;
+    border: 1px solid var(--color-rule);
+    padding: 0.4rem 0.7rem;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-chalk);
+    transition: border-color 120ms ease, background-color 120ms ease;
+  }
+  .btn:hover {
+    border-color: color-mix(in srgb, var(--color-chalk) 45%, transparent);
+    background-color: var(--color-board-hi);
+  }
+
+  .btn-primary {
+    border-radius: 3px;
+    background-color: var(--color-chalk);
+    padding: 0.4rem 0.8rem;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-pitch);
+    transition: background-color 120ms ease;
+  }
+  .btn-primary:hover {
+    background-color: #ffffff;
+  }
+
   .btn-muted {
-    @apply rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200;
+    padding: 0.4rem 0.5rem;
+    font-size: 11px;
+    color: var(--color-dim);
+    transition: color 120ms ease;
+  }
+  .btn-muted:hover {
+    color: var(--color-chalk);
+  }
+}
+
+:where(a, button, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-chalk);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }

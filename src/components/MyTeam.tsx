@@ -29,7 +29,10 @@ export function MyTeamLink() {
   }, [])
   if (!team) return null
   return (
-    <Link href={`/${team.league}/${team.slug}`} className="whitespace-nowrap text-xs font-medium text-amber-300">
+    <Link
+      href={`/${team.league}/${team.slug}`}
+      className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-dim transition-colors hover:text-chalk"
+    >
       ★ {team.name}
     </Link>
   )
@@ -47,8 +50,8 @@ export function PinTeamButton({ league, slug, name }: MyTeam) {
     window.dispatchEvent(new Event('lv-myteam'))
   }
   return (
-    <button onClick={togglePin} className="btn-muted">
-      {pinned ? '★ My team' : '☆ Pin as my team'}
+    <button onClick={togglePin} className="btn" aria-pressed={pinned}>
+      {pinned ? '★ Unpin my team' : '☆ Pin as my team'}
     </button>
   )
 }

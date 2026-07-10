@@ -7,19 +7,16 @@ export function SelectionTray() {
   if (picks.length === 0) return null
   const href = `/api/cal/custom?ids=${encodeURIComponent(picks.join(','))}`
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-800 bg-slate-950/95 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-rule bg-pitch/95 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex items-center gap-4">
-        <span className="text-sm font-medium">
-          {picks.length} game{picks.length === 1 ? '' : 's'} selected
+        <span className="text-sm">
+          <span className="num font-bold">{picks.length}</span>
+          <span className="ml-2 text-dim">game{picks.length === 1 ? '' : 's'} selected</span>
         </span>
-        <a
-          href={href}
-          download
-          className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-slate-950 hover:bg-emerald-400"
-        >
+        <a href={href} download className="btn-primary ml-auto sm:ml-0">
           Download .ics
         </a>
-        <button onClick={clear} className="text-sm text-slate-400 hover:text-slate-200">
+        <button onClick={clear} className="btn-muted">
           Clear
         </button>
       </div>

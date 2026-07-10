@@ -25,8 +25,19 @@ export default async function Home() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {(live.length > 0 || upcoming.length > 0) && <AutoRefresh seconds={60} />}
+      <div className="max-w-2xl">
+        <h1 className="display text-3xl leading-[0.95] sm:text-4xl">
+          Every kickoff,
+          <br />
+          in your calendar
+        </h1>
+        <p className="mt-4 text-sm leading-relaxed text-dim">
+          Fixtures, results and tables across five leagues. Subscribe once and your calendar stays current when
+          kickoff times move.
+        </p>
+      </div>
       {live.length > 0 && (
         <Section title="Live now">
           <FixtureList fixtures={live} showLeague />
@@ -48,16 +59,16 @@ export default async function Home() {
         </Section>
       )}
       <Section title="Leagues">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {LEAGUES.map((l) => (
             <Link
               key={l.slug}
               href={`/${l.slug}`}
-              className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-600"
-              style={{ borderTop: `3px solid ${l.accent}` }}
+              className="board p-4 transition-colors hover:bg-board-hi"
+              style={{ borderLeft: `2px solid ${l.accent}` }}
             >
-              <div className="font-bold">{l.name}</div>
-              <div className="text-xs text-slate-400">Fixtures · Results · Table · Teams</div>
+              <div className="text-[15px] font-semibold">{l.name}</div>
+              <div className="eyebrow mt-1.5">Fixtures · Results · Table · Teams</div>
             </Link>
           ))}
         </div>
