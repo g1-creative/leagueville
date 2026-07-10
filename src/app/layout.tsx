@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Archivo, Martian_Mono } from 'next/font/google'
+import Image from 'next/image'
 import Link from 'next/link'
+import { BottomNav } from '@/components/BottomNav'
 import { LeagueNav } from '@/components/LeagueNav'
 import { MyTeamLink } from '@/components/MyTeam'
 import { SelectionTray } from '@/components/SelectionTray'
@@ -56,8 +58,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <TimezoneProvider>
           <header className="sticky top-0 z-40 border-b border-rule bg-pitch/90 backdrop-blur">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
-              <Link href="/" className="display text-[15px] leading-none">
-                Leagueville
+              <Link href="/" className="flex items-center gap-2">
+                <Image src="/brand/mark.png" alt="" width={20} height={20} className="size-5" priority />
+                <span className="display text-[15px] leading-none">Leagueville</span>
               </Link>
               <LeagueNav />
               <div className="ml-auto flex items-center gap-3">
@@ -66,11 +69,19 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </div>
             </div>
           </header>
-          <main className="px-4 py-8 pb-24 sm:px-6 lg:px-8">{children}</main>
+          <main className="px-4 py-8 pb-[calc(8.5rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-24 lg:px-8">
+            {children}
+          </main>
           <SelectionTray />
-          <footer className="border-t border-rule px-4 py-8 sm:px-6 lg:px-8">
-            <p className="eyebrow">Data from ESPN and TheSportsDB</p>
-            <p className="mt-1.5 text-xs text-dim">Not affiliated with any league or club.</p>
+          <BottomNav />
+          <footer className="border-t border-rule px-4 py-8 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:px-6 md:pb-8 lg:px-8">
+            <div className="flex items-start gap-3">
+              <Image src="/brand/mark.png" alt="Leagueville" width={24} height={24} className="size-6" />
+              <div>
+                <p className="eyebrow">Data from ESPN and TheSportsDB</p>
+                <p className="mt-1.5 text-xs text-dim">Not affiliated with any league or club.</p>
+              </div>
+            </div>
           </footer>
         </TimezoneProvider>
       </body>

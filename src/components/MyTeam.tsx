@@ -37,7 +37,7 @@ export function MyTeamLink() {
   return (
     <Link
       href={`/${team.league}/${team.slug}`}
-      className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-dim transition-colors hover:text-chalk"
+      className="hidden whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-dim transition-colors hover:text-chalk md:inline"
     >
       ★ {team.name}
     </Link>

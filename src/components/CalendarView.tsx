@@ -265,7 +265,7 @@ export function CalendarView({
           role="dialog"
           tabIndex={-1}
           aria-label={dateHeading(`${openDay}T12:00:00Z`, 'UTC')}
-          className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur outline-none sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96 sm:rounded-[3px] sm:border"
+          className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur outline-none md:inset-x-auto md:right-6 md:bottom-6 md:w-96 md:rounded-[3px] md:border"
         >
           <div className="mb-3 flex items-center justify-between">
             <h2 className="display text-[13px] leading-none">{dateHeading(`${openDay}T12:00:00Z`, 'UTC')}</h2>

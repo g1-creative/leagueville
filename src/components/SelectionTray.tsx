@@ -7,7 +7,7 @@ export function SelectionTray() {
   if (picks.length === 0) return null
   const href = `/api/cal/custom?ids=${encodeURIComponent(picks.join(','))}`
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-rule bg-pitch/95 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
+    <div className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-50 border-t border-rule bg-pitch/95 px-4 py-3 backdrop-blur sm:px-6 md:bottom-0 lg:px-8">
       <div className="flex items-center gap-4">
         <span className="text-sm">
           <span className="num font-bold">{picks.length}</span>

@@ -10,7 +10,7 @@ export function LeagueNav() {
   const pathname = usePathname()
   const cupsActive = pathname === '/cups' || pathname.startsWith('/cups/')
   return (
-    <nav className="-mb-px flex gap-4 overflow-x-auto">
+    <nav className="-mb-px hidden gap-4 overflow-x-auto md:flex">
       {LEAGUES.map((l) => {
         const active = pathname === `/${l.slug}` || pathname.startsWith(`/${l.slug}/`)
         return (
