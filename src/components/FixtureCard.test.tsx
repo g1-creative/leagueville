@@ -19,15 +19,18 @@ const base: Fixture = {
   away: { id: 'a', name: 'Everton' },
 }
 
+// The card renders a stacked mobile row (sm:hidden) and the classic desktop
+// row (hidden sm:flex); jsdom applies no media queries, so shared content
+// appears twice.
 describe('FixtureCard', () => {
-  it('shows team names and kickoff time for a scheduled game', () => {
+  it('shows team names and kickoff time in both layouts for a scheduled game', () => {
     render(<FixtureCard fixture={base} />)
-    expect(screen.getByText('Liverpool')).toBeDefined()
-    expect(screen.getByText('Everton')).toBeDefined()
-    expect(screen.getByText('2:00 PM')).toBeDefined() // default tz is UTC
+    expect(screen.getAllByText('Liverpool')).toHaveLength(2)
+    expect(screen.getAllByText('Everton')).toHaveLength(2)
+    expect(screen.getAllByText('2:00 PM')).toHaveLength(2) // default tz is UTC
   })
 
-  it('shows the score for a finished game', () => {
+  it('shows the score in both layouts for a finished game', () => {
     render(
       <FixtureCard
         fixture={{
@@ -39,18 +42,26 @@ describe('FixtureCard', () => {
         }}
       />,
     )
-    expect(screen.getByText('2–1')).toBeDefined()
+    expect(screen.getAllByText('2–1')).toHaveLength(2)
     expect(screen.getByText('FT')).toBeDefined()
   })
 
-  it('shows a pick toggle only when pickable and scheduled', () => {
+  it('shows a pick toggle in each layout only when pickable and scheduled', () => {
     render(<FixtureCard fixture={base} pickable />)
-    expect(screen.getByRole('button', { name: /cal/i })).toBeDefined()
+    expect(screen.getAllByRole('button', { name: /cal/i })).toHaveLength(2)
   })
 
   it('shows a competition badge for cup fixtures when showLeague is set', () => {
     render(<FixtureCard fixture={{ ...base, competition: 'fa-cup' }} showLeague />)
-    expect(screen.getByText('FA Cup')).toBeDefined()
+    expect(screen.getAllByText('FA Cup')).toHaveLength(2)
+  })
+
+  it('links the mobile row to the game page', () => {
+    const { container } = render(<FixtureCard fixture={base} pickable />)
+    const link = container.querySelector('a[href="/premier-league/game/1"]')
+    expect(link).not.toBeNull()
+    expect(link?.textContent).toContain('Liverpool')
+    expect(link?.textContent).toContain('Everton')
   })
 
   it('lets long team names truncate instead of overflowing the row', () => {
@@ -63,8 +74,6 @@ describe('FixtureCard', () => {
     const halves = container.querySelectorAll('div.flex-1')
     expect(halves.length).toBe(2)
     for (const el of halves) {
-      // Without min-w-0 a flex child refuses to shrink below its content,
-      // so truncate cannot engage and .board's overflow:hidden clips names.
       expect(el.className).toContain('min-w-0')
     }
   })
