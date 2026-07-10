@@ -44,6 +44,18 @@ In `src/app/layout.tsx`:
 - `export const viewport: Viewport` with `themeColor: "#0a100e"` and `viewportFit: "cover"` (enables safe-area insets).
 - `metadata.appleWebApp`: `capable: true`, `statusBarStyle: "black-translucent"`, `title: "Leagueville"`, `startupImage: [...]` (the splash set).
 
+### Cinematic in-app splash (added by user after initial approval)
+On first load per session (browser tab or installed app), a full-screen overlay in pitch black plays a brief cinematic intro: the soccer ball from the logo drops/rolls in, the LV mark and wordmark resolve around it, then the overlay fades to reveal the app. Constraints:
+- Total duration ≤ 1.6s, pure CSS animation (no JS animation libraries), skipped entirely under `prefers-reduced-motion` and on subsequent client-side navigations (sessionStorage flag).
+- Rendered by a small client component in the root layout; content underneath loads concurrently, so the splash costs no extra time-to-interactive.
+
+### Logo throughout the site (added by user after initial approval)
+The logo replaces text-only branding wherever the brand appears:
+- Header wordmark becomes the LV mark + "Leagueville" lockup (mark as inline image/SVG, sized to the slim header row).
+- Favicon regenerated from the mark (replaces default `favicon.ico`).
+- Footer gains the small mark.
+- Home hero may incorporate the mark tastefully; body pages otherwise unchanged.
+
 ### Non-goals
 No service worker and no offline support in this pass. Install, standalone display, and splash screens do not require one.
 
