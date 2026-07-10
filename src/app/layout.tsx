@@ -58,7 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="bg-pitch text-chalk antialiased">
         <TimezoneProvider>
           <SplashIntro />
-          <header className="sticky top-0 z-40 border-b border-rule bg-pitch/90 backdrop-blur">
+          <header className="sticky top-0 z-40 border-b border-rule bg-pitch/90 pt-[env(safe-area-inset-top)] backdrop-blur">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 sm:px-6 lg:px-8">
               <Link href="/" className="flex items-center gap-2">
                 <Image src="/brand/mark.png" alt="" width={20} height={20} className="size-5" priority />

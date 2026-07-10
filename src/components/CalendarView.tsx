@@ -16,6 +16,7 @@ import { dateHeading } from '@/lib/time'
 import type { Fixture } from '@/lib/types'
 import { DayColumn } from './DayColumn'
 import { MonthGrid } from './MonthGrid'
+import { usePicks } from './picks'
 import { useTz } from './TimezoneProvider'
 
 const weekColumnFormat = new Intl.DateTimeFormat('en-US', {
@@ -73,6 +74,7 @@ export function CalendarView({
   fixtures: Fixture[]
 }) {
   const { tz } = useTz()
+  const { picks } = usePicks()
   const [pinned, setPinned] = useState<PinnedTeam | null>(null)
   const [openDay, setOpenDay] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -265,7 +267,16 @@ export function CalendarView({
           role="dialog"
           tabIndex={-1}
           aria-label={dateHeading(`${openDay}T12:00:00Z`, 'UTC')}
-          className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur outline-none md:inset-x-auto md:right-6 md:bottom-6 md:w-96 md:rounded-[3px] md:border"
+          data-testid="day-panel"
+          // The selection tray shares this fixed bottom offset (and z-50) on
+          // both mobile (3.5rem nav) and desktop (bottom-0 there); when it's
+          // showing, lift the panel by the tray's height so the tray never
+          // paints over the panel's last picks.
+          className={`fixed inset-x-0 z-50 max-h-[70vh] overflow-y-auto border-t border-rule bg-pitch/95 p-4 backdrop-blur outline-none md:inset-x-auto md:right-6 md:w-96 md:rounded-[3px] md:border ${
+            picks.length > 0
+              ? 'bottom-[calc(7.5rem+env(safe-area-inset-bottom))] md:bottom-20'
+              : 'bottom-[calc(3.5rem+env(safe-area-inset-bottom))] md:bottom-6'
+          }`}
         >
           <div className="mb-3 flex items-center justify-between">
             <h2 className="display text-[13px] leading-none">{dateHeading(`${openDay}T12:00:00Z`, 'UTC')}</h2>

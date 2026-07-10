@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { Fixture } from '@/lib/types'
 
 vi.mock('next/image', () => ({
@@ -8,6 +8,7 @@ vi.mock('next/image', () => ({
 }))
 
 import { CalendarView } from './CalendarView'
+import { clearPicks, togglePick } from './picks'
 
 const ALL = ['premier-league', 'la-liga', 'ligue-1', 'brasileirao', 'mls']
 
@@ -24,7 +25,10 @@ const mls: Fixture = {
 
 const props = { view: 'day' as const, anchor: '2026-07-15', today: '2026-07-09', fixtures: [epl, mls] }
 
-beforeEach(() => window.localStorage.clear())
+beforeEach(() => {
+  window.localStorage.clear()
+  clearPicks()
+})
 
 describe('CalendarView', () => {
   it('shows every league when all chips are on', () => {
@@ -137,6 +141,17 @@ describe('CalendarView', () => {
     expect(chip.getAttribute('href')).toContain('view=week')
     expect(chip.getAttribute('href')).not.toContain('view=day')
     expect(chip.getAttribute('href')).toContain('d=2026-07-15')
+  })
+
+  it('lifts the day panel above the selection tray once a game is picked', () => {
+    render(<CalendarView {...props} view="month" anchor="2026-07-15" leagues={ALL} />)
+    fireEvent.click(screen.getByRole('button', { name: /^July 15, 2026\b/ }))
+    const panel = screen.getByTestId('day-panel')
+    expect(panel.className).toContain('bottom-[calc(3.5rem+env(safe-area-inset-bottom))]')
+    expect(panel.className).toContain('md:bottom-6')
+    act(() => togglePick('premier-league:1'))
+    expect(panel.className).toContain('bottom-[calc(7.5rem+env(safe-area-inset-bottom))]')
+    expect(panel.className).toContain('md:bottom-20')
   })
 
   it('shows the weekday and day number in week-view column headings', () => {
