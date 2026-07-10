@@ -59,7 +59,7 @@ const dataUrl = `data:image/png;base64,${png.toString('base64')}`
 
 const browser = await chromium.launch()
 const page = await browser.newPage()
-const results = await page.evaluate(
+const { background, images } = await page.evaluate(
   async ({ dataUrl, jobs }) => {
     const img = new Image()
     await new Promise((resolve, reject) => {
@@ -67,12 +67,25 @@ const results = await page.evaluate(
       img.onerror = reject
       img.src = dataUrl
     })
-    return jobs.map((job) => {
+
+    // Sample the source image's own corner background colour instead of
+    // hardcoding one — the master isn't pure #000000, and a mismatched fill
+    // leaves a visible seam where the logo art ends and the canvas begins.
+    const sampleCanvas = document.createElement('canvas')
+    sampleCanvas.width = 1
+    sampleCanvas.height = 1
+    const sampleCtx = sampleCanvas.getContext('2d')
+    sampleCtx.drawImage(img, 0, 0, 1, 1, 0, 0, 1, 1)
+    const [r, g, b] = sampleCtx.getImageData(0, 0, 1, 1).data
+    const toHex = (n) => n.toString(16).padStart(2, '0')
+    const background = `#${toHex(r)}${toHex(g)}${toHex(b)}`
+
+    const images = jobs.map((job) => {
       const canvas = document.createElement('canvas')
       canvas.width = job.kind === 'splash' ? job.w : job.size
       canvas.height = job.kind === 'splash' ? job.h : job.size
       const ctx = canvas.getContext('2d')
-      ctx.fillStyle = '#000000' // the logo's own background colour
+      ctx.fillStyle = background // the logo's own sampled background colour
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       ctx.imageSmoothingQuality = 'high'
       if (job.kind === 'crop') {
@@ -87,14 +100,18 @@ const results = await page.evaluate(
       }
       return canvas.toDataURL('image/png')
     })
+
+    return { background, images }
   },
   { dataUrl, jobs },
 )
 await browser.close()
 
+console.log('background:', background)
+
 for (let i = 0; i < jobs.length; i++) {
   const out = path.join(ROOT, jobs[i].out)
   await mkdir(path.dirname(out), { recursive: true })
-  await writeFile(out, Buffer.from(results[i].split(',')[1], 'base64'))
+  await writeFile(out, Buffer.from(images[i].split(',')[1], 'base64'))
   console.log('wrote', jobs[i].out)
 }
