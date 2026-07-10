@@ -65,7 +65,7 @@ export function LeagueSheet({
             >
               <span aria-hidden className="size-2 shrink-0 rounded-full" style={{ backgroundColor: l.accent }} />
               {l.name}
-              <span className="eyebrow ml-auto">{l.shortName}</span>
+              {l.shortName !== l.name && <span className="eyebrow ml-auto">{l.shortName}</span>}
             </Link>
           ))}
         </nav>

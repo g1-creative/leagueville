@@ -14,8 +14,9 @@ describe('LeagueSheet', () => {
     const links = screen.getAllByRole('link')
     expect(links).toHaveLength(5)
     expect(screen.getByText('Premier League').closest('a')?.getAttribute('href')).toBe('/premier-league')
-    expect(screen.getAllByText('MLS')[0].closest('a')?.getAttribute('href')).toBe('/mls')
-    fireEvent.click(screen.getAllByText('La Liga')[0])
+    expect(screen.getByText('MLS').closest('a')?.getAttribute('href')).toBe('/mls')
+    expect(screen.getAllByText('MLS')).toHaveLength(1)
+    fireEvent.click(screen.getByText('La Liga'))
     expect(onClose).toHaveBeenCalledOnce()
   })
 
